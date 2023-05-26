@@ -19,7 +19,7 @@ const ForgotPassword = () => {
 		setLoading(true)
 		setTimeout(() => {
 		setLoading(false)
-			message.success('New password has send to your email!');
+			message.success('A nova senha foi enviada para o seu email!');
 		}, 1500);
 	};
 
@@ -31,9 +31,10 @@ const ForgotPassword = () => {
 						<Card>
 							<div className="my-2">
 								<div className="text-center">
-									<img className="img-fluid" src={`/img/${theme === 'light' ? 'logo.png': 'logo-white.png'}`} alt="" />
-									<h3 className="mt-3 font-weight-bold">Forgot Password?</h3>
-									<p className="mb-4">Enter your Email to reset password</p>
+									{/*<img className="img-fluid" src={`/img/${theme === 'light' ? 'logo.png': 'logo-white.png'}`} alt="" />*/}
+									<h1>Contas em dia</h1>
+									<h3 className="mt-3 font-weight-bold">Esqueceu a senha?</h3>
+									<p className="mb-4">Informe seu email para receber uma nova senha</p>
 								</div>
 								<Row justify="center">
 									<Col xs={24} sm={24} md={20} lg={20}>
@@ -44,18 +45,18 @@ const ForgotPassword = () => {
 													[
 														{ 
 															required: true,
-															message: 'Please input your email address'
+															message: 'Informe seu email'
 														},
 														{ 
 															type: 'email',
-															message: 'Please enter a validate email!'
+															message: 'Email inválido!'
 														}
 													]
 												}>
-												<Input placeholder="Email Address" prefix={<MailOutlined className="text-primary" />}/>
+												<Input placeholder="Email" prefix={<MailOutlined className="text-primary" />}/>
 											</Form.Item>
 											<Form.Item>
-												<Button loading={loading} type="primary" htmlType="submit" block>{loading? 'Sending' : 'Send'}</Button>
+												<Button loading={loading} type="primary" htmlType="submit" block>{loading? 'Enviando' : 'Enviar'}</Button>
 											</Form.Item>
 										</Form>
 									</Col>

@@ -20,7 +20,7 @@ const Login = props => {
 							<div className="my-4">
 								<div className="text-center">
 									{/*<img className="img-fluid" src={`/img/${theme === 'light' ? 'logo.png': 'logo-white.png'}`} alt="" />*/}
-									<h1>CONTA EM DIA</h1>
+									<h1>Contas em dia</h1>
 									<p>Ainda não tem uma conta? <a href="/auth/register">Cadastre-se</a></p>
 								</div>
 								<Row justify="center">

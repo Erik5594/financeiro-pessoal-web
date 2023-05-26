@@ -19,8 +19,9 @@ const RegisterOne = props => {
 						<Card>
 							<div className="my-2">
 								<div className="text-center">
-								<img className="img-fluid" src={`/img/${theme === 'light' ? 'logo.png': 'logo-white.png'}`} alt="" />
-									<p className="text-muted">Create a new account:</p>
+								{/*<img className="img-fluid" src={`/img/${theme === 'light' ? 'logo.png': 'logo-white.png'}`} alt="" />*/}
+									<h1>Contas em dia</h1>
+									<p className="text-muted">Criar uma nova conta:</p>
 								</div>
 								<Row justify="center">
 									<Col xs={24} sm={24} md={20} lg={20}>

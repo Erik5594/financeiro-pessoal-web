@@ -10,30 +10,30 @@ const rules = {
 	email: [
 		{ 
 			required: true,
-			message: 'Please input your email address'
+			message: 'Informe seu email!'
 		},
 		{ 
 			type: 'email',
-			message: 'Please enter a validate email!'
+			message: 'Email inválido!'
 		}
 	],
 	password: [
 		{ 
 			required: true,
-			message: 'Please input your password'
+			message: 'Informe uma senha'
 		}
 	],
 	confirm: [
 		{ 
 			required: true,
-			message: 'Please confirm your password!'
+			message: 'Confirme seu email!'
 		},
 		({ getFieldValue }) => ({
 			validator(_, value) {
 				if (!value || getFieldValue('password') === value) {
 					return Promise.resolve();
 				}
-				return Promise.reject('Passwords do not match!');
+				return Promise.reject('As senhas não combinam!');
 			},
 		})
 	]
@@ -88,7 +88,7 @@ export const RegisterForm = (props) => {
 				</Form.Item>
 				<Form.Item 
 					name="password" 
-					label="Password" 
+					label="Senha" 
 					rules={rules.password}
 					hasFeedback
 				>
@@ -96,7 +96,7 @@ export const RegisterForm = (props) => {
 				</Form.Item>
 				<Form.Item 
 					name="confirm" 
-					label="ConfirmPassword" 
+					label="Confirme a senha" 
 					rules={rules.confirm}
 					hasFeedback
 				>
@@ -104,7 +104,7 @@ export const RegisterForm = (props) => {
 				</Form.Item>
 				<Form.Item>
 					<Button type="primary" htmlType="submit" block loading={loading}>
-						Sign Up
+						Cadastrar
 					</Button>
 				</Form.Item>
 			</Form>
