@@ -39,13 +39,17 @@ export const LoginForm = props => {
 	} = props
 
 	const initialCredential = {
-		email: 'user1@themenate.net',
-		password: '2005ipo'
+		email: 'erik-qo',
+		senha: '123456'
 	}
 
 	const onLogin = values => {
 		showLoading()
-		signIn(values);
+		signIn({
+			...values,
+			email: values.email.includes('@') ? values.email : null,
+			username: values.email.includes('@') ? null : values.email
+		});
 	};
 
 	const onGoogleLogin = () => {
@@ -123,7 +127,7 @@ export const LoginForm = props => {
 					<Input prefix={<MailOutlined className="text-primary" />}/>
 				</Form.Item>
 				<Form.Item 
-					name="password" 
+					name="senha" 
 					label={
 						<div className={`${showForgetPassword? 'd-flex justify-content-between w-100 align-items-center' : ''}`}>
 							<span>Senha</span>
@@ -176,6 +180,7 @@ LoginForm.defaultProps = {
 };
 
 const mapStateToProps = ({auth}) => {
+	console.log('Auth apssou aqui...', auth)
 	const {loading, message, showMessage, token, redirect} = auth;
   return {loading, message, showMessage, token, redirect}
 }

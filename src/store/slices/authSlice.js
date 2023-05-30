@@ -12,10 +12,11 @@ export const initialState = {
 }
 
 export const signIn = createAsyncThunk('auth/login',async (data, { rejectWithValue }) => {
-	const { email, password } = data
+	const { email, username, senha } = data
 	try {
-		const response = await AuthService.login({email, password})
-		const token = response.data.token;
+		const response = await AuthService.login({email, username, senha})
+		const token = response.jwttoken;
+
 		localStorage.setItem(AUTH_TOKEN, token);
 		return token;
 	} catch (err) {

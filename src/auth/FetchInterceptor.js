@@ -20,7 +20,7 @@ service.interceptors.request.use(config => {
 	const jwtToken = localStorage.getItem(AUTH_TOKEN) || null;
 	
 	if (jwtToken) {
-		config.headers[TOKEN_PAYLOAD_KEY] = jwtToken
+		config.headers[TOKEN_PAYLOAD_KEY] = 'Bearer ' + jwtToken
 	}
 
   	return config

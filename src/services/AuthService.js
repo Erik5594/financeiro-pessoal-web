@@ -4,7 +4,7 @@ const AuthService = {}
 
 AuthService.login = function (data) {
 	return fetch({
-		url: '/auth/login',
+		url: '/v1/auth/signin',
 		method: 'post',
 		data: data
 	})
