@@ -87,7 +87,7 @@ export const MetodosPagamento = props => {
     <div>
       <div>
       <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-      <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
+      <Form.Item name="nome" label="Nome" rules={[{ required: true, message: 'Nome é obrigatório!' }]}>
         <Input />
       </Form.Item>
       <Form.Item name="descricao" label="Descrição" rules={[{ required: false }]}>
