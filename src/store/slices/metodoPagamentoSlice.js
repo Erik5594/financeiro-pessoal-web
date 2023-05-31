@@ -20,6 +20,24 @@ export const listar = createAsyncThunk('metodo-pagamento/listar',async (data, { 
 	}
 })
 
+export const cadastrar = createAsyncThunk('metodo-pagamento/cadastrar',async (data, { rejectWithValue }) => {
+	try {
+		await MetodoPagamentoService.cadastrar(data)
+        return true
+	} catch (err) {
+		return rejectWithValue(err.response?.data?.message || 'Error')
+	}
+})
+
+export const excluir = createAsyncThunk('metodo-pagamento/excluir',async (data, { rejectWithValue }) => {
+	try {
+		await MetodoPagamentoService.excluir(data)
+        return data
+	} catch (err) {
+		return rejectWithValue(err.response?.data?.message || 'Error')
+	}
+})
+
 
 export const metodosPagamentoSlice = createSlice({
 	name: 'metodosPagamento',
@@ -37,6 +55,32 @@ export const metodosPagamentoSlice = createSlice({
 				state.metodosPagamentos = action.payload.content
 			})
 			.addCase(listar.rejected, (state, action) => {
+				state.message = action.payload
+				state.showMessage = true
+				state.loading = false
+			})
+			.addCase(cadastrar.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(cadastrar.fulfilled, (state, action) => {
+				state.loading = false
+				state.message = 'Cadastro realizado com sucesso!'
+				state.showMessage = true
+			})
+			.addCase(cadastrar.rejected, (state, action) => {
+				state.message = action.payload
+				state.showMessage = true
+				state.loading = false
+			})
+			.addCase(excluir.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(excluir.fulfilled, (state, action) => {
+				state.loading = false
+				state.message = 'Cadastro excluido com sucesso!'
+				state.showMessage = true
+			})
+			.addCase(excluir.rejected, (state, action) => {
 				state.message = action.payload
 				state.showMessage = true
 				state.loading = false
