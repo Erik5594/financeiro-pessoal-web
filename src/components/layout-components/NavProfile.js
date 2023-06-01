@@ -5,7 +5,7 @@ import {
   EditOutlined,
   SettingOutlined,
   ShopOutlined,
-  QuestionCircleOutlined,
+  GoldOutlined,
   LogoutOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
@@ -82,8 +82,15 @@ const MenuItemMetodosPagamento = (props) => {
         open={open}
         extra={
           <Space>
-            <Button onClick={onClose} size="small" >Cancelar</Button>
-            <Button className="mr-2" size="small" type="primary" onClick={showModal}>
+            <Button onClick={onClose} size="small">
+              Cancelar
+            </Button>
+            <Button
+              className="mr-2"
+              size="small"
+              type="primary"
+              onClick={showModal}
+            >
               Novo
             </Button>
           </Space>
@@ -98,12 +105,12 @@ const MenuItemMetodosPagamento = (props) => {
   );
 };
 
-// const MenuItem = (props) => (
-// 	<Flex as="a" href={props.path} alignItems="center" gap={SPACER[2]}>
-// 		<Icon>{props.icon}</Icon>
-// 		<span>{props.label}</span>
-// 	</Flex>
-//)
+const MenuItem = (props) => (
+  <Flex as="a" href={props.path} alignItems="center" gap={SPACER[2]}>
+    <Icon>{props.icon}</Icon>
+    <span>{props.label}</span>
+  </Flex>
+);
 
 const MenuItemSignOut = (props) => {
   const dispatch = useDispatch();
@@ -131,6 +138,16 @@ const items = [
       <MenuItemMetodosPagamento
         label="Metodos pagamento"
         icon={<DollarOutlined />}
+      />
+    ),
+  },
+  {
+    key: "Categorias",
+    label: (
+      <MenuItem
+        path="/app/categoria"
+        label="Categorias"
+        icon={<GoldOutlined />}
       />
     ),
   },
