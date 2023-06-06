@@ -1,4 +1,4 @@
-import { Button, Cascader, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal } from "antd";
 import React from "react";
 
 const layout = {
@@ -11,16 +11,41 @@ const tailLayout = {
 };
 
 export const CategoriaCadastroModal = (props) => {
-  const { onFinish, open, form, handleCancel, tipo, categoriaPai } = props;
+  const {
+    form,
+    onFinish,
+    open,
+    fields,
+    onChange,
+    handleCancel,
+    tipo,
+    idCategoriaPai,
+    isEdicao
+  } = props;
 
   return (
     <Modal
-      title={`Cadastrar categoria de ${tipo}`}
+      title={`${isEdicao ? 'Editar':'Cadastrar'} categoria de ${tipo}`}
       open={open}
       footer={null}
       onCancel={handleCancel}
     >
-      <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
+      <Form
+        {...layout}
+        form={form}
+        name="control-hooks"
+        fields={fields}
+        onFieldsChange={(changedFields, allFields) => {
+          onChange(allFields);
+        }}
+        onFinish={(values) =>
+          onFinish({
+            ...values,
+            idCategoriaPai,
+            natureza: tipo === "receita" ? "RECEITA" : "DESPESA",
+          })
+        }
+      >
         <Form.Item
           name="nome"
           label="Nome"
@@ -40,11 +65,11 @@ export const CategoriaCadastroModal = (props) => {
           label="Categoria Pai"
           rules={[{ required: false }]}
         >
-          <Cascader disabled value={categoriaPai}/>
+          <Input disabled />
         </Form.Item>
         <Form.Item {...tailLayout}>
           <Button className="mr-2" type="primary" htmlType="submit">
-            Cadastrar
+            {isEdicao ? 'Editar':'Cadastrar'}
           </Button>
         </Form.Item>
       </Form>

@@ -21,6 +21,15 @@ CategoriaService.cadastrar = function (data) {
 	})
 }
 
+CategoriaService.editar = function (data) {
+	const url = URL_CATEGORIA+`/${data.id}`;
+	return fetch({
+		url,
+		method: 'put',
+		data: data
+	})
+}
+
 CategoriaService.excluir = function (data) {
 	const url = URL_CATEGORIA+'/'+data.id;
 	return fetch({

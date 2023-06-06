@@ -5,7 +5,7 @@ import store from '../store';
 import { AUTH_TOKEN } from 'constants/AuthConstant';
 import { notification } from 'antd';
 
-const unauthorizedCode = [400, 401, 403]
+const unauthorizedCode = [401, 403]
 
 const service = axios.create({
   baseURL: API_BASE_URL,
@@ -48,6 +48,10 @@ service.interceptors.response.use( (response) => {
 		localStorage.removeItem(AUTH_TOKEN)
 
 		store.dispatch(signOutSuccess())
+	}
+
+	if (error.response.status === 400) {
+		notificationParam.message = error.response.data.mensagem
 	}
 
 	if (error.response.status === 404) {

@@ -37,6 +37,15 @@ export const cadastrar = createAsyncThunk('categoria/cadastrar',async (data, { r
 	}
 })
 
+export const editar = createAsyncThunk('categoria/editar',async (data, { rejectWithValue }) => {
+	try {
+		await CategoriaService.editar(data)
+        return true
+	} catch (err) {
+		return rejectWithValue(err.response?.data?.message || 'Error')
+	}
+})
+
 export const excluir = createAsyncThunk('categoria/excluir',async (data, { rejectWithValue }) => {
 	try {
 		await CategoriaService.excluir(data)
@@ -95,6 +104,19 @@ export const categoriaSlice = createSlice({
 				state.showMessage = true
 			})
 			.addCase(cadastrar.rejected, (state, action) => {
+				state.message = action.payload
+				state.showMessage = true
+				state.loading = false
+			})
+			.addCase(editar.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(editar.fulfilled, (state) => {
+				state.loading = false
+				state.message = 'Cadastro editado com sucesso!'
+				state.showMessage = true
+			})
+			.addCase(editar.rejected, (state, action) => {
 				state.message = action.payload
 				state.showMessage = true
 				state.loading = false
