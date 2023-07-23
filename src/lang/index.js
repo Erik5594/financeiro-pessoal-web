@@ -1,7 +1,9 @@
+import antdPtBR from 'antd/es/locale/pt_BR';
 import antdEnUS from 'antd/es/locale/en_US';
 import antdZhCn from 'antd/es/locale/zh_CN';
 import antdFrFR from 'antd/es/locale/fr_FR';
 import antdJaJP from 'antd/es/locale/ja_JP';
+import pt from './locales/pt_BR.json'
 import en from './locales/en_US.json'
 import zh from './locales/zh_CN.json'
 import fr from './locales/fr_FR.json'
@@ -11,6 +13,10 @@ import { initReactI18next } from 'react-i18next'
 import { THEME_CONFIG } from 'configs/AppConfig';
 
 export const resources = {
+    pt: {
+        translation: pt,
+        antd: antdPtBR
+    },
     en: {
         translation: en,
         antd: antdEnUS

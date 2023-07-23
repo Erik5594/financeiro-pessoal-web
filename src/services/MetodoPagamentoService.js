@@ -5,7 +5,7 @@ const URL_METODO_PAGAMENTO = '/v1/metodo-pagamento'
 const MetodoPagamentoService = {}
 
 MetodoPagamentoService.listar = function (data) {
-	const url = URL_METODO_PAGAMENTO + '?size='+data.size+'&page='+data.page;
+	const url = URL_METODO_PAGAMENTO + '?size='+data.size+'&page='+data.page+'&nome='+(data.nome||'');
 	return fetch({
 		url,
 		method: 'get'

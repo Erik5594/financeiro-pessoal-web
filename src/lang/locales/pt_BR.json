@@ -5,8 +5,8 @@
 	"sidenav.dashboard.default": "Default",
 	"sidenav.dashboard.analytic": "Analytic",
 	"sidenav.dashboard.sales": "Sales",
-	"sidenav.despesa": "Expense",
-	"sidenav.despesa.lista": "Expense List",
+	"sidenav.despesa": "Despesa",
+	"sidenav.despesa.lista": "Lista de despesas",
 
 	"sidenav.apps": "Apps",
 	"sidenav.apps.mail": "Mail",

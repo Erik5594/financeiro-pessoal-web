@@ -4,8 +4,8 @@ const URL_CATEGORIA = '/v1/categoria'
 
 const CategoriaService = {}
 
-CategoriaService.buscarTodas = function () {
-	const url = URL_CATEGORIA;
+CategoriaService.buscarTodas = function (filtro = { natureza: "DESPESA", ultimaFilha: true, nome: "" } ) {
+	const url = URL_CATEGORIA + '?natureza='+filtro.natureza+'&ultimaFilha='+filtro.ultimaFilha+'&nome='+(filtro.nome||'');
 	return fetch({
 		url,
 		method: 'get'

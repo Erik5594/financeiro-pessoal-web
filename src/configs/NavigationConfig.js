@@ -19,6 +19,24 @@ const dashBoardNavTree = [{
       submenu: []
     }
   ]
+},
+{
+  key: 'despesas',
+  path: `${APP_PREFIX_PATH}/despesa`,
+  title: 'sidenav.despesa',
+  icon: DashboardOutlined,
+  breadcrumb: false,
+  isGroupTitle: true,
+  submenu: [
+    {
+      key: 'listaDespesas',
+      path: `${APP_PREFIX_PATH}/despesa`,
+      title: 'sidenav.despesa.lista',
+      icon: DashboardOutlined,
+      breadcrumb: false,
+      submenu: []
+    }
+  ]
 }]
 
 const navigationConfig = [

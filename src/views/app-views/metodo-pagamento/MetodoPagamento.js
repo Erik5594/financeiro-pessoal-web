@@ -6,7 +6,6 @@ import { cadastrar, listar, excluir } from "store/slices/metodoPagamentoSlice";
 import InfiniteScroll from "react-infinite-scroller";
 import { notification } from "antd";
 import { Form } from "antd";
-import { Input } from "antd";
 import MetodoPagamentoModal from "./MetodoPagamentoModal";
 
 const infiniteScroll = {
@@ -23,11 +22,8 @@ export const MetodosPagamento = (props) => {
     listar,
     excluir,
     loading,
-    showMessage,
-    message,
     metodosPagamentos,
     hasMore,
-    registro,
     isModalOpen,
     handleCancel,
   } = props;
