@@ -16,6 +16,7 @@ import React, { Fragment, useEffect } from "react";
 import metodoPagamentoService from "services/MetodoPagamentoService";
 import { useState } from "react";
 import FormCategoriaList from "../categoria/componentes/FormCategoriaList";
+import categoriaService from "services/CategoriaService";
 
 const { Option } = Select;
 const { MonthPicker } = DatePicker;
@@ -35,17 +36,101 @@ const situacaoMetodoPagamento = [
 ];
 
 export const DespesaCadastroModal = (props) => {
-  const { open, cadastrar, isEdicao, handleCancel, fetchDespesas } = props;
+  const { open, cadastrar, isEdicao, handleCancel, fetchDespesas, despesa } =
+    props;
 
   const [form] = Form.useForm();
   const [fields, setFields] = useState(fielsDefault);
   const [listaMetodoPagamento, setListaMetodoPagamento] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const filtroMetodoPagamento = { page: 0, size: 500, nome: "" };
   const [cadastrarAndContinuar, setCadastrarAndContinuar] = useState(false);
+  const filtroCategoria = { natureza: "DESPESA", ultimaFilha: true, nome: "" };
 
   useEffect(() => {
-    fetchMetodoPagamento("");
+    fetchMetodoPagamento();
+    fetchCategorias();
+    arrumarFieldsEdicao();
   }, []);
+
+  useEffect(() => {
+    arrumarFieldsEdicao();
+  }, [despesa]);
+
+  const fetchCategorias = (filtro = filtroCategoria) => {
+    console.log('Buscando categorias list...')
+    categoriaService
+      .buscarTodas({ ...filtroCategoria, nome: filtro.nome })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          setCategorias(originalPromiseResult);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        console.log(
+          "Erro carregar formas pagamentos...",
+          rejectedValueOrSerializedError
+        )
+      );
+  };
+
+  const fetchMetodoPagamento = (filtro = filtroMetodoPagamento) => {
+    console.log('Buscando forma de pagamento...')
+    metodoPagamentoService
+      .listar({ ...filtroMetodoPagamento, nome: filtro.nome })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          setListaMetodoPagamento(originalPromiseResult.content);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        console.log(
+          "Erro carregar formas pagamentos...",
+          rejectedValueOrSerializedError
+        )
+      );
+  };
+
+  const arrumarFieldsEdicao = () => {
+    const fieldsEdicao = [];
+    if (despesa?.id) {
+      fieldsEdicao.push({
+        name: ["mesCompetencia"],
+        value: dayjs(despesa.mesCompetencia, "MM/YYYY"),
+      });
+      fieldsEdicao.push({
+        name: ["dataLancamento"],
+        value: dayjs(despesa.dataLancamento, "DD/MM/YYYY"),
+      });
+      fieldsEdicao.push({
+        name: ["dataVencimento"],
+        value: dayjs(despesa.dataVencimento, "DD/MM/YYYY"),
+      });
+      fieldsEdicao.push({
+        name: ["formaPagamento"],
+        value: despesa.idMetodoPagamento,
+      });
+      fieldsEdicao.push({ name: ["descricao"], value: despesa.descricao });
+      fieldsEdicao.push({ name: ["observacao"], value: despesa.observacao });
+      fieldsEdicao.push({ name: ["situacao"], value: despesa.situacao });
+      fieldsEdicao.push({
+        name: ["idCategoria"],
+        value: despesa.categorias[0].idCategoria,
+      });
+      fieldsEdicao.push({
+        name: ["descricaoCategoria"],
+        value: despesa.categorias[0].descricao,
+      });
+      fieldsEdicao.push({
+        name: ["valorCategoria"],
+        value: despesa.categorias[0].valor,
+      });
+
+      console.log('Fields edição...', fieldsEdicao)
+
+      setFields(fieldsEdicao)
+    }
+  };
 
   const onCancel = () => {
     form.resetFields();
@@ -54,17 +139,22 @@ export const DespesaCadastroModal = (props) => {
   };
 
   const onResetContinuar = () => {
-    form.resetFields(["descricao","observacao","idCategoria","descricaoCategoria"])
+    form.resetFields([
+      "descricao",
+      "observacao",
+      "idCategoria",
+      "descricaoCategoria",
+    ]);
     form.setFieldValue("valorCategoria", 0);
   };
 
   const onCadastrarAndContinuar = async (values) => {
     setCadastrarAndContinuar(true);
-  }
+  };
 
   const onCadastrarAndFechar = async (values) => {
     setCadastrarAndContinuar(false);
-  }
+  };
   const onCadastrarAction = async (values) => {
     const valoresFormatados = formatarDespesaRest(values);
     await cadastrar(valoresFormatados)
@@ -80,22 +170,6 @@ export const DespesaCadastroModal = (props) => {
       );
   };
 
-  const fetchMetodoPagamento = (filtro) => {
-    metodoPagamentoService
-      .listar({ ...filtroMetodoPagamento, nome: filtro })
-      .then((originalPromiseResult) => {
-        if (originalPromiseResult.payload !== "Error") {
-          setListaMetodoPagamento(originalPromiseResult.content);
-        }
-      })
-      .catch((rejectedValueOrSerializedError) =>
-        console.log(
-          "Erro carregar formas pagamentos...",
-          rejectedValueOrSerializedError
-        )
-      );
-  };
-
   const formatarDespesaRest = (values) => {
     const categorias = [
       {
@@ -105,6 +179,7 @@ export const DespesaCadastroModal = (props) => {
       },
     ];
     const value = {
+      ...despesa,
       ...values,
       dataLancamento: dayjs(values.dataLancamento).format("DD/MM/YYYY"),
       mesCompetencia: dayjs(values.mesCompetencia).format("DD/MM/YYYY"),
@@ -288,22 +363,36 @@ export const DespesaCadastroModal = (props) => {
             </Form.Item>
           </Col>
         </Row>
-        <FormCategoriaList />
+        <FormCategoriaList categorias={categorias}/>
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={10}>
-            <Form.Item>
-              <Button className="mr-2" type="primary" onClick={() => onCadastrarAndFechar()} htmlType="submit">
+          <div style={{display: 'flex', justifyContent: 'end', width: '100%'}}>
+            <div>
+          <Form.Item>
+              <Button
+                className="mr-2"
+                type={isEdicao ? "default":"primary"}
+                onClick={() => onCadastrarAndFechar()}
+                htmlType="submit"
+              >
                 {isEdicao ? "Salvar e fechar" : "Cadastrar e fechar"}
               </Button>
             </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={10}>
-            {!isEdicao ? (<Form.Item>
-              <Button className="mr-2" type="primary" onClick={() => onCadastrarAndContinuar()} htmlType="submit">
-                {isEdicao ? "Salvar e fechar" : "Cadastrar e continuar"}
-              </Button>
-            </Form.Item>) : null}
-          </Col>
+            </div>
+            <div>
+            {!isEdicao ? (
+              <Form.Item>
+                <Button
+                  className="mr-2"
+                  type="primary"
+                  onClick={() => onCadastrarAndContinuar()}
+                  htmlType="submit"
+                >
+                  {isEdicao ? "Salvar e fechar" : "Cadastrar e continuar"}
+                </Button>
+              </Form.Item>
+            ) : null}
+            </div>
+          </div>
         </Row>
       </Form>
     </Modal>

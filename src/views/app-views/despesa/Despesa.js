@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import TableDespesa from "./componentes/TableDespesa";
 import { PlusOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
-import { listar, cadastrar, excluir } from "store/slices/despesaSlice";
+import {
+  listar,
+  cadastrar,
+  excluir,
+  buscarById,
+} from "store/slices/despesaSlice";
 import { Button, Form, Tooltip, notification } from "antd";
 import PageHeaderAlt from "components/layout-components/PageHeaderAlt";
 import Flex from "components/shared-components/Flex";
@@ -14,12 +19,14 @@ const titulo = {
 };
 
 export const Despesa = (props) => {
-  const { listar, cadastrar, excluir, despesas, loading, content } = props;
+  const { listar, cadastrar, excluir, despesas, buscarById, loading, content } =
+    props;
 
   const [paginacao, setPaginacao] = useState({ pageSize: 10, current: 0 });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEdicao, setIsEdicao] = useState(false);
+  const [despesa, setDespesa] = useState({});
 
   const fetchDespesas = (
     pageable = { size: paginacao.pageSize, page: paginacao.current }
@@ -38,6 +45,20 @@ export const Despesa = (props) => {
   const onEditar = (id) => {
     console.log("Editando despesa...", id);
     console.log("Ed Despesas...", despesas);
+    setIsEdicao(true);
+    buscarById({ id })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          const retorno = originalPromiseResult.payload;
+          console.log("Retorno...", retorno);
+          setDespesa(retorno);
+          setIsModalOpen(true);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        notification.error({ message: "Ocorreu um erro ao tentar cadastrar!" })
+      );
+    setDespesa();
   };
 
   const onChangePage = (page) => {
@@ -102,8 +123,12 @@ export const Despesa = (props) => {
         cadastrar={cadastrar}
         open={isModalOpen}
         isEdicao={isEdicao}
-        handleCancel={() => setIsModalOpen(false)}
+        handleCancel={() => {
+          setDespesa({});
+          setIsModalOpen(false);
+        }}
         fetchDespesas={fetchDespesas}
+        despesa={despesa}
       />
     </div>
   );
@@ -124,6 +149,7 @@ const mapDispatchToProps = {
   listar,
   cadastrar,
   excluir,
+  buscarById,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Despesa);

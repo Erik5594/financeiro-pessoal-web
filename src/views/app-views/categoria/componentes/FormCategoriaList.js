@@ -1,37 +1,13 @@
 import { Col, Form, Input, InputNumber, Row, Select } from "antd";
-import categoriaService from "services/CategoriaService";
 import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
 
 const { Option } = Select;
 
 export const FormCategoriaList = (props) => {
-  const [categorias, setCategorias] = useState([]);
-  const filtroCategoria = { natureza: "DESPESA", ultimaFilha: true, nome: "" };
-
-  useEffect(() => {
-    fetchCategorias("");
-  }, []);
-
-  const fetchCategorias = (filtro) => {
-    categoriaService
-      .buscarTodas({ ...filtroCategoria, nome: filtro.nome })
-      .then((originalPromiseResult) => {
-        if (originalPromiseResult.payload !== "Error") {
-          setCategorias(originalPromiseResult);
-        }
-      })
-      .catch((rejectedValueOrSerializedError) =>
-        console.log(
-          "Erro carregar formas pagamentos...",
-          rejectedValueOrSerializedError
-        )
-      );
-  };
+  const { categorias } = props;
 
   return (
-    <Row gutter={8}>
+    <Row gutter={16}>
       <Col xs={24} sm={24} md={8}>
         <Form.Item
           name="idCategoria"
@@ -84,6 +60,7 @@ export const FormCategoriaList = (props) => {
           rules={[{ required: false }]}
         >
           <InputNumber
+            style={{ width: "100%" }}
             controls={false}
             prefix="R$"
             decimalSeparator=","

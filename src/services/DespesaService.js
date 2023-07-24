@@ -21,11 +21,28 @@ DespesaService.cadastrar = function (data) {
 	})
 }
 
+DespesaService.atualizar = function (data) {
+	const url = URL_DESPESA+'/'+data.id;
+	return fetch({
+		url,
+		method: 'put',
+		data
+	})
+}
+
 DespesaService.excluir = function (data) {
 	const url = URL_DESPESA + '/'+data.id;
 	return fetch({
 		url,
 		method: 'delete'
+	})
+}
+
+DespesaService.buscarById = function (data) {
+	const url = URL_DESPESA+'/'+data.id;
+	return fetch({
+		url,
+		method: 'get'
 	})
 }
 
