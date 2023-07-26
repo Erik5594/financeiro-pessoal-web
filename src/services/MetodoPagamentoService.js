@@ -21,6 +21,15 @@ MetodoPagamentoService.cadastrar = function (data) {
 	})
 }
 
+MetodoPagamentoService.atualizar = function (data) {
+	const url = URL_METODO_PAGAMENTO+'/'+data.id;
+	return fetch({
+		url,
+		method: 'put',
+		data
+	})
+}
+
 MetodoPagamentoService.excluir = function (data) {
 	const url = URL_METODO_PAGAMENTO+'/'+data.id;
 	return fetch({

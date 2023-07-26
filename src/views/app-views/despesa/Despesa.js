@@ -43,14 +43,11 @@ export const Despesa = (props) => {
   };
 
   const onEditar = (id) => {
-    console.log("Editando despesa...", id);
-    console.log("Ed Despesas...", despesas);
     setIsEdicao(true);
     buscarById({ id })
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
           const retorno = originalPromiseResult.payload;
-          console.log("Retorno...", retorno);
           setDespesa(retorno);
           setIsModalOpen(true);
         }

@@ -58,7 +58,6 @@ export const DespesaCadastroModal = (props) => {
   }, [despesa]);
 
   const fetchCategorias = (filtro = filtroCategoria) => {
-    console.log('Buscando categorias list...')
     categoriaService
       .buscarTodas({ ...filtroCategoria, nome: filtro.nome })
       .then((originalPromiseResult) => {
@@ -75,7 +74,6 @@ export const DespesaCadastroModal = (props) => {
   };
 
   const fetchMetodoPagamento = (filtro = filtroMetodoPagamento) => {
-    console.log('Buscando forma de pagamento...')
     metodoPagamentoService
       .listar({ ...filtroMetodoPagamento, nome: filtro.nome })
       .then((originalPromiseResult) => {
@@ -125,8 +123,6 @@ export const DespesaCadastroModal = (props) => {
         name: ["valorCategoria"],
         value: despesa.categorias[0].valor,
       });
-
-      console.log('Fields edição...', fieldsEdicao)
 
       setFields(fieldsEdicao)
     }
@@ -198,8 +194,15 @@ export const DespesaCadastroModal = (props) => {
     return value;
   };
 
-  const onChangeDate = (date, dateString) => {
-    console.log("Data...", date, dateString);
+  const onMetodoPagamento = (value, option) => {
+    console.log(`Metodo Pagamento [${value}]...`, option);
+    if(option.diaVencimento){
+      console.log('Calculando nova data de vencimento...')
+    console.log('Setando nova data de vencimento...')
+    }else{
+      console.log('Forma de pagamento não tem dia de vencimento...')
+    }
+    
   };
 
   const getTitle = () => {
@@ -241,7 +244,6 @@ export const DespesaCadastroModal = (props) => {
             >
               <MonthPicker
                 locale={locale}
-                onChange={onChangeDate}
                 placeholder="Competência"
                 format="MM/YYYY"
               />
@@ -255,7 +257,6 @@ export const DespesaCadastroModal = (props) => {
             >
               <DatePicker
                 locale={locale}
-                onChange={onChangeDate}
                 placeholder="Data do lançamento"
                 format="DD/MM/YYYY"
               />
@@ -280,6 +281,7 @@ export const DespesaCadastroModal = (props) => {
                 showSearch
                 placeholder="Selecionar forma de pagamento"
                 optionFilterProp="children"
+                onChange={(value, option) => onMetodoPagamento(value, option)}
                 filterOption={(input, option) => {
                   return (
                     option.props.children
@@ -289,7 +291,7 @@ export const DespesaCadastroModal = (props) => {
                 }}
               >
                 {listaMetodoPagamento.map((formaPagamento, index) => (
-                  <Option key={index} value={formaPagamento.id}>
+                  <Option diaVencimento={formaPagamento.diaVencimento} key={index} value={formaPagamento.id}>
                     {formaPagamento.nome}
                   </Option>
                 ))}
@@ -304,7 +306,6 @@ export const DespesaCadastroModal = (props) => {
             >
               <DatePicker
                 locale={locale}
-                onChange={onChangeDate}
                 placeholder="Vencimento"
                 format="DD/MM/YYYY"
                 defaultValue={dayjs(dayjs(), "DD/MM/YYYY")}

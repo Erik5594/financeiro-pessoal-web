@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import { Dropdown, Avatar, Drawer, Space, Button } from "antd";
 import { useDispatch } from "react-redux";
 import {
-  EditOutlined,
-  SettingOutlined,
-  ShopOutlined,
   GoldOutlined,
   LogoutOutlined,
   DollarOutlined,
@@ -19,7 +16,7 @@ import {
   SPACER,
   FONT_SIZES,
 } from "constants/ThemeConstant";
-import MetodosPagamento from "views/app-views/metodo-pagamento/MetodoPagamento";
+import MetodoPagamento from "views/app-views/metodo-pagamento/MetodosPagamento";
 
 const Icon = styled.div(() => ({
   fontSize: FONT_SIZES.LG,
@@ -48,22 +45,22 @@ const Title = styled.span(() => ({
 
 const MenuItemMetodosPagamento = (props) => {
   const [open, setOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  const [openModalCadastro, setOpenModalCadastro] = useState(false);
 
   const showDrawer = () => {
     setOpen(true);
   };
 
-  const onClose = () => {
+  const onCloseDrawer = () => {
     setOpen(false);
+  };
+
+  const showModal = () => {
+    setOpenModalCadastro(true);
+  };
+
+  const onCloseModal = () => {
+    setOpenModalCadastro(false);
   };
 
   return (
@@ -78,27 +75,28 @@ const MenuItemMetodosPagamento = (props) => {
         title="Métodos de pagamento"
         placement={"right"}
         width={450}
-        onClose={onClose}
+        onClose={onCloseDrawer}
         open={open}
         extra={
           <Space>
-            <Button onClick={onClose} size="small">
+            <Button onClick={onCloseDrawer} size="small">
               Cancelar
             </Button>
             <Button
               className="mr-2"
               size="small"
               type="primary"
-              onClick={showModal}
+              onClick={() => showModal()}
             >
               Novo
             </Button>
           </Space>
         }
       >
-        <MetodosPagamento
-          handleCancel={handleCancel}
-          isModalOpen={isModalOpen}
+        <MetodoPagamento
+          openModalCadastro={openModalCadastro}
+          showModalCadastro={showModal}
+          onCloseModal={onCloseModal}
         />
       </Drawer>
     </div>
