@@ -124,7 +124,7 @@ export const DespesaCadastroModal = (props) => {
         value: despesa.categorias[0].valor,
       });
 
-      setFields(fieldsEdicao)
+      setFields(fieldsEdicao);
     }
   };
 
@@ -194,15 +194,155 @@ export const DespesaCadastroModal = (props) => {
     return value;
   };
 
-  const onMetodoPagamento = (value, option) => {
-    console.log(`Metodo Pagamento [${value}]...`, option);
-    if(option.diaVencimento){
-      console.log('Calculando nova data de vencimento...')
-    console.log('Setando nova data de vencimento...')
-    }else{
-      console.log('Forma de pagamento não tem dia de vencimento...')
+  const onChangeMetodoPagamento = (value, option) => {
+    const fieldsEdicao = [...fields];
+    fieldsEdicao.push({
+      name: ["formaPagamento"],
+      value: value,
+    });
+    if (option.diaVencimento) {
+      if (option.diaFechamento) {
+        const diaBase = option.diaVencimento - option.diaFechamento;
+        if (diaBase <= 0) {
+          if (diaBase === 0) {
+            /*
+             * diaBase = 0: Indica que a fatura fecha sempre no 1° dia do mês.
+             */
+            fieldsEdicao.push({
+              name: ["dataVencimento"],
+              value: dayjs(
+                dayjs()
+                  .set("M", dayjs().month() + 1)
+                  .set("D", option.diaVencimento),
+                "DD/MM/YYYY"
+              ),
+            });
+          } else if (diaBase === -1) {
+            /*
+             * diaBase = -1: Indica que a fatura fecha sempre no ultimo dia do mês anterior ao de vencimento.
+             */
+            if (dayjs().date() === dayjs().endOf("M").date()) {
+              /**
+               * Ultimo dia do mês
+               */
+              fieldsEdicao.push({
+                name: ["dataVencimento"],
+                value: dayjs(
+                  dayjs()
+                    .set("M", dayjs().month() + 2)
+                    .set("D", option.diaVencimento),
+                  "DD/MM/YYYY"
+                ),
+              });
+            } else {
+              /**
+               * Qualquer outro do mês
+               */
+              fieldsEdicao.push({
+                name: ["dataVencimento"],
+                value: dayjs(
+                  dayjs()
+                    .set("M", dayjs().month() + 1)
+                    .set("D", option.diaVencimento),
+                  "DD/MM/YYYY"
+                ),
+              });
+            }
+          } else {
+            /*
+              
+                 diaBase < -1: Indica que a fatura fecha sempre no mês anterior ao de vencimento.
+                 Dia de vencimento (V): 4
+                 Dias para fechamento (F): 7
+                 Dia do cadastro: 30/07
+
+                 V - F = -3
+                 Dia do fechamento = 28/07
+                 Data vencimento = 04/09/2023
+
+                 -----------------------------------
+
+                 Dia de vencimento (V): 4
+                 Dias para fechamento (F): 7
+                 Dia do cadastro: 02/08
+
+                 V - F = -3
+                 Dia do fechamento = 28/07
+                 Data vencimento = 04/09/2023 
+
+               */
+            const ultimoDiaMes = dayjs().endOf("M").date();
+            const diaFechamento = ultimoDiaMes - Math.abs(diaBase);
+            const diaHoje = dayjs().date();
+            if (diaHoje >= diaFechamento) {
+              fieldsEdicao.push({
+                name: ["dataVencimento"],
+                value: dayjs(
+                  dayjs()
+                    .set("M", dayjs().month() + 2)
+                    .set("D", option.diaVencimento),
+                  "DD/MM/YYYY"
+                ),
+              });
+            } else {
+              fieldsEdicao.push({
+                name: ["dataVencimento"],
+                value: dayjs(
+                  dayjs()
+                    .set("M", dayjs().month() + 1)
+                    .set("D", option.diaVencimento),
+                  "DD/MM/YYYY"
+                ),
+              });
+            }
+          }
+        } else {
+          if (dayjs().date() >= option.diaVencimento - option.diaFechamento) {
+            fieldsEdicao.push({
+              name: ["dataVencimento"],
+              value: dayjs(
+                dayjs()
+                  .set("M", dayjs().month() + 1)
+                  .set("D", option.diaVencimento),
+                "DD/MM/YYYY"
+              ),
+            });
+          } else {
+            fieldsEdicao.push({
+              name: ["dataVencimento"],
+              value: dayjs(
+                dayjs().set("D", option.diaVencimento),
+                "DD/MM/YYYY"
+              ),
+            });
+          }
+        }
+      } else {
+        if (dayjs().date() >= option.diaVencimento) {
+          fieldsEdicao.push({
+            name: ["dataVencimento"],
+            value: dayjs(
+              dayjs()
+                .set("M", dayjs().month() + 1)
+                .set("D", option.diaVencimento),
+              "DD/MM/YYYY"
+            ),
+          });
+        } else {
+          fieldsEdicao.push({
+            name: ["dataVencimento"],
+            value: dayjs(dayjs().set("D", option.diaVencimento), "DD/MM/YYYY"),
+          });
+        }
+      }
+    } else {
+      fieldsEdicao.push({
+        name: ["dataVencimento"],
+        value: dayjs(dayjs(), "DD/MM/YYYY"),
+      });
     }
-    
+
+    setFields(fieldsEdicao);
   };
 
   const getTitle = () => {
@@ -281,7 +421,7 @@ export const DespesaCadastroModal = (props) => {
                 showSearch
                 placeholder="Selecionar forma de pagamento"
                 optionFilterProp="children"
-                onChange={(value, option) => onMetodoPagamento(value, option)}
+                onChange={(value, option) => onChangeMetodoPagamento(value, option)}
                 filterOption={(input, option) => {
                   return (
                     option.props.children
@@ -291,7 +431,12 @@ export const DespesaCadastroModal = (props) => {
                 }}
               >
                 {listaMetodoPagamento.map((formaPagamento, index) => (
-                  <Option diaVencimento={formaPagamento.diaVencimento} key={index} value={formaPagamento.id}>
+                  <Option
+                    diaFechamento={formaPagamento.diasParaFechamento}
+                    diaVencimento={formaPagamento.diaVencimento}
+                    key={index}
+                    value={formaPagamento.id}
+                  >
                     {formaPagamento.nome}
                   </Option>
                 ))}
@@ -364,34 +509,36 @@ export const DespesaCadastroModal = (props) => {
             </Form.Item>
           </Col>
         </Row>
-        <FormCategoriaList categorias={categorias}/>
+        <FormCategoriaList categorias={categorias} />
         <Row gutter={16}>
-          <div style={{display: 'flex', justifyContent: 'end', width: '100%'}}>
+          <div
+            style={{ display: "flex", justifyContent: "end", width: "100%" }}
+          >
             <div>
-          <Form.Item>
-              <Button
-                className="mr-2"
-                type={isEdicao ? "default":"primary"}
-                onClick={() => onCadastrarAndFechar()}
-                htmlType="submit"
-              >
-                {isEdicao ? "Salvar e fechar" : "Cadastrar e fechar"}
-              </Button>
-            </Form.Item>
-            </div>
-            <div>
-            {!isEdicao ? (
               <Form.Item>
                 <Button
                   className="mr-2"
-                  type="primary"
-                  onClick={() => onCadastrarAndContinuar()}
+                  type={isEdicao ? "default" : "primary"}
+                  onClick={() => onCadastrarAndFechar()}
                   htmlType="submit"
                 >
-                  {isEdicao ? "Salvar e fechar" : "Cadastrar e continuar"}
+                  {isEdicao ? "Salvar e fechar" : "Cadastrar e fechar"}
                 </Button>
               </Form.Item>
-            ) : null}
+            </div>
+            <div>
+              {!isEdicao ? (
+                <Form.Item>
+                  <Button
+                    className="mr-2"
+                    type="primary"
+                    onClick={() => onCadastrarAndContinuar()}
+                    htmlType="submit"
+                  >
+                    {isEdicao ? "Salvar e fechar" : "Cadastrar e continuar"}
+                  </Button>
+                </Form.Item>
+              ) : null}
             </div>
           </div>
         </Row>

@@ -80,7 +80,7 @@ export const MetodosPagamentoModal = (props) => {
   };
 
   return (
-    <Modal title={getTitle()} open={open} footer={null} onCancel={handleCancel}>
+    <Modal title={getTitle()} open={open} footer={null} onCancel={onCancel}>
       <Form
         layout="vertical"
         form={form}
