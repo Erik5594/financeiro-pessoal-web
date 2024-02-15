@@ -16,11 +16,13 @@ export const TableDespesa = ({
       case "EM_ABERTO":
         return { text: "Em aberto", color: "yellow" };
       case "PAGO":
-        return { text: "Pago", color: "green" };
+        return { text: "Paga", color: "green" };
       case "PARCIALMENTE_PAGO":
-        return { text: "Parcialmente pago", color: "geekblue" };
+        return { text: "Parcialmente paga", color: "geekblue" };
+      case "VENCIDA":
+        return { text: "Vencida", color: "red" };
       default:
-        return { text: "Indefinido", color: "red" };
+        return { text: "Indefinida", color: "orange" };
     }
   };
 

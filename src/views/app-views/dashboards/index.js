@@ -15,10 +15,10 @@ export const DefaultDashboard = () => {
   return (
     <div className="Cards">
       <DashboardPieDespesa />
+      {/*<DashboardPieDespesa />
       <DashboardPieDespesa />
       <DashboardPieDespesa />
-      <DashboardPieDespesa />
-      <DashboardPieDespesa />
+  <DashboardPieDespesa />*/}
     </div>
   );
 };

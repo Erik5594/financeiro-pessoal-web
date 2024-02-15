@@ -13,9 +13,8 @@ export const initialState = {
 export const listar = createAsyncThunk(
   "despesa/listar",
   async (data, { rejectWithValue }) => {
-    const { size, page } = data;
     try {
-      const response = await DespesaService.listar({ size, page });
+      const response = await DespesaService.listar(data);
       return response;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Error");

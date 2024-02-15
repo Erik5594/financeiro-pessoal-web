@@ -5,7 +5,24 @@ const URL_DESPESA = '/v1/despesa'
 const DespesaService = {}
 
 DespesaService.listar = function (data) {
-	const url = URL_DESPESA + '?size='+data.size+'&page='+data.page;
+	let url = URL_DESPESA + '?size='+data.pageable.size+'&page='+data.pageable.page+'&sort='+data.pageable.sort;
+
+	if(data.filtro.descricao){
+		url = url + '&descricao='+data.filtro.descricao;
+	}
+
+	if(data.filtro.tipoSituacao){
+		url = url + '&tipoSituacao='+data.filtro.tipoSituacao;
+	}
+
+	if(data.filtro.competencia){
+		url = url + '&competencia='+data.filtro.competencia.format('DD/MM/YYYY');
+	}
+
+	if(data.filtro.vencimento){
+		url = url + '&vencimento='+data.filtro.vencimento.format('DD/MM/YYYY');
+	}
+	
 	return fetch({
 		url,
 		method: 'get'

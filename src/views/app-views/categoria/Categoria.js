@@ -56,7 +56,12 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(false);
     const values = tipo === "receita" ? state.receita : state.despesa;
-    setFields([{ name: ["categoriaPai"], value: values.caminho }]);
+    console.log('Values Cadastro', values);
+    setFields([
+      { name: ["nome"], value: "" },
+      { name: ["descricao"], value: "" },
+      { name: ["categoriaPai"], value: values.caminho },
+    ]);
     setIsModalOpen(true);
   };
 
@@ -64,6 +69,7 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(true);
     const values = tipo === "receita" ? state.receita : state.despesa;
+    console.log('Values Edição', values);
     buscarById({ id: values.idCategoriaPai })
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
@@ -184,6 +190,7 @@ export const Categoria = (props) => {
   };
 
   const onSelect = (tipo, categoriaSelecionada) => {
+    console.log('Selecionado', categoriaSelecionada)
     let nomeCaminho = "";
     let nomeCaminhoParent = "";
     let idCategoriaSelecionada = "";
@@ -191,6 +198,7 @@ export const Categoria = (props) => {
     if (categoriaSelecionada && categoriaSelecionada.length !== 0) {
       idCategoriaSelecionada = categoriaSelecionada[0];
       nomeCaminho = getNomeCaminhoCategoria(categoriaSelecionada[0], tipo);
+      nomeCaminhoParent = getNomeCaminhoCategoriaParent(categoriaSelecionada[0], tipo);
     }
     if (tipo === "receita") {
       setState({
@@ -218,6 +226,32 @@ export const Categoria = (props) => {
   };
 
   const getNomeCaminhoCategoria = (idCategoriaSelecionada, tipo) => {
+    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo)
+
+    let nomeCompleto = "";
+    for (let i = nomeCategorias.length - 1; i >= 0; i--) {
+      nomeCompleto = nomeCompleto + nomeCategorias[i];
+      if (i !== 0) {
+        nomeCompleto = nomeCompleto + " >> ";
+      }
+    }
+    return nomeCompleto;
+  };
+
+  const getNomeCaminhoCategoriaParent = (idCategoriaSelecionada, tipo) => {
+    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo)
+
+    let nomeCompleto = "";
+    for (let i = nomeCategorias.length - 1; i >= 1; i--) {
+      nomeCompleto = nomeCompleto + nomeCategorias[i];
+      if (i !== 1) {
+        nomeCompleto = nomeCompleto + " >> ";
+      }
+    }
+    return nomeCompleto;
+  };
+
+  const getNomesCategorias = (idCategoriaSelecionada, tipo) => {
     const nomeCategorias = [];
     let idCategoria = idCategoriaSelecionada;
 
@@ -245,15 +279,7 @@ export const Categoria = (props) => {
         )
       );
     }
-
-    let nomeCompleto = "";
-    for (let i = nomeCategorias.length - 1; i >= 0; i--) {
-      nomeCompleto = nomeCompleto + nomeCategorias[i];
-      if (i !== 0) {
-        nomeCompleto = nomeCompleto + " >> ";
-      }
-    }
-    return nomeCompleto;
+    return nomeCategorias;
   };
 
   const getNomeCategoria = (key, tree) => {

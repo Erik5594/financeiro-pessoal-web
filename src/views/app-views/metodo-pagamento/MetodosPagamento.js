@@ -18,7 +18,7 @@ export const MetodosPagamento = (props) => {
     onCloseModal,
   } = props;
 
-  const [paginacao, setPaginacao] = useState({ pageSize: 5, current: 0 });
+  const [paginacao, setPaginacao] = useState({ pageSize: 10, current: 0 });
   const [isEdicao, setIsEdicao] = useState(false);
   const [metodoPagamento, setMetodoPagamento] = useState({});
 
@@ -52,6 +52,7 @@ export const MetodosPagamento = (props) => {
 
   const onEditar = (metodoPagamento) => {
     setMetodoPagamento(metodoPagamento);
+    setIsEdicao(true);
     showModalCadastro();
   };
 
@@ -72,6 +73,7 @@ export const MetodosPagamento = (props) => {
           open={openModalCadastro}
           handleCancel={() => {
             setMetodoPagamento({});
+            setIsEdicao(false);
             onCloseModal();
           }}
           isEdicao={isEdicao}

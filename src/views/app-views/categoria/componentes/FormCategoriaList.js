@@ -65,7 +65,7 @@ export const FormCategoriaList = (props) => {
             prefix="R$"
             decimalSeparator=","
             precision={2}
-            step={0.01}
+            step={1.00}
           />
         </Form.Item>
       </Col>

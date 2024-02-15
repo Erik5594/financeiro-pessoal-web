@@ -98,7 +98,7 @@ export const MetodosPagamentoModal = (props) => {
               label="Nome"
               rules={[{ required: true, message: "Nome é obrigatório!" }]}
             >
-              <Input disabled={isEdicao} />
+              <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>

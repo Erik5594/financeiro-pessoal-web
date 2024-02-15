@@ -2,16 +2,72 @@ import React from "react";
 import Chart from "react-apexcharts";
 import { COLORS } from "constants/ChartConstant";
 import CardDashboard from "../componente/CardDashboard";
+import { buscar } from "store/slices/dashboardTotalizadorDespesaSlice";
+import { connect } from "react-redux";
+import { useEffect } from "react";
+import dayjs from "dayjs";
+import { useState } from "react";
+import { notification } from "antd";
 
-export const DashboardPieDespesa = () => {
-  const valores = [500, 996.65, 99.9];
-  const series = [7, 15, 2];
+export const DashboardPieDespesa = (props) => {
+  const { buscar, totalizador, loading, content } = props;
+  const [valores, setValores] = useState([]);
+
+  const fetchTotalizador = (competencia) => {
+    buscar(competencia)
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          const retorno = originalPromiseResult.payload;
+          setarValores(retorno);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        notification.error({ message: "Ocorreu um erro ao tentar cadastrar!" })
+      );
+  };
+
+  useEffect(() => {
+    fetchTotalizador(dayjs(dayjs(), "DD/MM/YYYY"));
+  }, []);
+
   const options = {
     colors: COLORS,
-    labels: ["Paga", "Em aberto", "Vencida"],
+    labels: ["Em aberto", "Paga", "Vencida"],
     dataLabels: {
-      formatter: function (value, opts) {
-        return opts.w.config.series[opts.seriesIndex];
+      textAnchor: "end",
+      distributed: false,
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: "14px",
+        fontFamily: "Helvetica, Arial, sans-serif",
+        fontWeight: "bold",
+        colors: undefined,
+      },
+      background: {
+        enabled: true,
+        foreColor: "#fff",
+        padding: 4,
+        borderRadius: 2,
+        borderWidth: 1,
+        borderColor: "#fff",
+        opacity: 0.9,
+        dropShadow: {
+          enabled: true,
+          top: 1,
+          left: 1,
+          blur: 1,
+          color: "#000",
+          opacity: 0.45,
+        },
+      },
+      dropShadow: {
+        enabled: false,
+        top: 1,
+        left: 1,
+        blur: 1,
+        color: "#000",
+        opacity: 0.45,
       },
       pie: {
         expandOnClick: true,
@@ -24,7 +80,7 @@ export const DashboardPieDespesa = () => {
           value,
           { series, seriesIndex, dataPointIndex, w }
         ) {
-          return valores[seriesIndex].toLocaleString("pt-BR", {
+          return value.toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
           });
@@ -51,11 +107,40 @@ export const DashboardPieDespesa = () => {
     },
   };
 
+  const setarValores = (totalizadorAux) => {
+    const valoresAux = [
+      totalizadorAux.totalEmAberto | 0,
+      totalizadorAux.totalPago | 0,
+      totalizadorAux.totalVencido | 0,
+    ];
+
+    setValores(valoresAux);
+  };
+
   return (
     <CardDashboard title={"Despesa"} subtitle={"Quantidade x Situação"}>
-      <Chart options={options} series={series} type="pie" />
+      <Chart options={options} series={valores} type="pie" />
     </CardDashboard>
   );
 };
 
-export default DashboardPieDespesa;
+const mapStateToProps = ({ totalizadorDespesaReducer }) => {
+  const { loading, message, showMessage, totalizador, content } =
+    totalizadorDespesaReducer;
+  return {
+    loading,
+    message,
+    showMessage,
+    totalizador,
+    content,
+  };
+};
+
+const mapDispatchToProps = {
+  buscar,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DashboardPieDespesa);

@@ -94,7 +94,7 @@ export const DespesaCadastroModal = (props) => {
     if (despesa?.id) {
       fieldsEdicao.push({
         name: ["mesCompetencia"],
-        value: dayjs(despesa.mesCompetencia, "MM/YYYY"),
+        value: dayjs(despesa.mesCompetencia, "DD/MM/YYYY"),
       });
       fieldsEdicao.push({
         name: ["dataLancamento"],
@@ -161,8 +161,8 @@ export const DespesaCadastroModal = (props) => {
         fetchDespesas();
         cadastrarAndContinuar ? onResetContinuar() : onCancel();
       })
-      .catch((rejectedValueOrSerializedError) =>
-        notification.error({ message: "Ocorreu um erro ao tentar cadastrar!" })
+      .catch((rejectedValueOrSerializedError) =>{
+        notification.error({ message: "Ocorreu um erro ao tentar cadastrar!" })}
       );
   };
 
@@ -518,7 +518,7 @@ export const DespesaCadastroModal = (props) => {
               <Form.Item>
                 <Button
                   className="mr-2"
-                  type={isEdicao ? "default" : "primary"}
+                  type={!isEdicao ? "default" : "primary"}
                   onClick={() => onCadastrarAndFechar()}
                   htmlType="submit"
                 >

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TableDespesa from "./componentes/TableDespesa";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import {
   listar,
@@ -12,6 +12,8 @@ import { Button, Form, Tooltip, notification } from "antd";
 import PageHeaderAlt from "components/layout-components/PageHeaderAlt";
 import Flex from "components/shared-components/Flex";
 import DespesaCadastroModal from "./DespesaCadastroModal";
+import ModalFiltroDespesa from "./componentes/ModalFiltroDespesa";
+import dayjs from "dayjs";
 
 const titulo = {
   marginBottom: "20px",
@@ -22,25 +24,68 @@ export const Despesa = (props) => {
   const { listar, cadastrar, excluir, despesas, buscarById, loading, content } =
     props;
 
-  const [paginacao, setPaginacao] = useState({ pageSize: 10, current: 0 });
+  const [paginacao, setPaginacao] = useState({
+    size: 10,
+    page: 0,
+    sort: "situacao,dataVencimento,ASC",
+  });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filtroState, setFiltroState] = useState({
+    descricao: undefined,
+    tipoSituacao: undefined,
+    competencia: dayjs(dayjs(), "DD/MM/YYYY"),
+    vencimento: undefined,
+  });
+
+  const [isModalCadastroOpen, setIsModalCadastroOpen] = useState(false);
+  const [isModalFiltroOpen, setIsModalFiltroOpen] = useState(false);
   const [isEdicao, setIsEdicao] = useState(false);
   const [despesa, setDespesa] = useState({});
+  const [countFiltroUtilizado, setCountFiltroUtilizado] = useState(1);
 
-  const fetchDespesas = (
-    pageable = { size: paginacao.pageSize, page: paginacao.current }
-  ) => {
-    listar(pageable);
+  const fetchDespesas = (pageable = {...paginacao}, filtro = {...filtroState}) => {
+    listar({pageable, filtro});
   };
 
   useEffect(() => {
-    fetchDespesas({ size: paginacao.pageSize, page: paginacao.current });
+    fetchDespesas(paginacao);
   }, []);
 
   const onNova = (data) => {
-    setIsModalOpen(true);
+    setIsModalCadastroOpen(true);
   };
+
+  const onClickButtonFiltro = () => {
+    setIsModalFiltroOpen(true);
+  };
+
+  const handlerFiltro = (values) => {
+    const filtroAux = {...values}
+    setFiltroState(filtroAux);
+    setCountFiltroUtilizado(countFiltros(filtroAux));
+    fetchDespesas(paginacao, filtroAux);
+  }
+
+  const countFiltros = (filtro) => {
+    let contador = 0;
+    if(filtro.competencia){
+      contador++;
+    }
+
+    if(filtro.vencimento){
+      contador++;
+    }
+
+    if(filtro.tipoSituacao){
+      contador++;
+    }
+
+    if(filtro.valorCategoria){
+      contador++;
+    }
+    return contador;
+
+  }
 
   const onEditar = (id) => {
     setIsEdicao(true);
@@ -49,7 +94,7 @@ export const Despesa = (props) => {
         if (originalPromiseResult.payload !== "Error") {
           const retorno = originalPromiseResult.payload;
           setDespesa(retorno);
-          setIsModalOpen(true);
+          setIsModalCadastroOpen(true);
         }
       })
       .catch((rejectedValueOrSerializedError) =>
@@ -59,8 +104,13 @@ export const Despesa = (props) => {
   };
 
   const onChangePage = (page) => {
-    setPaginacao({ ...paginacao, current: page - 1 });
-    const pageAux = { size: paginacao.pageSize, page: page - 1 };
+    const pageAux = {
+      ...paginacao,
+      page: page - 1,
+    };
+    
+    setPaginacao(pageAux);
+
     fetchDespesas(pageAux);
   };
 
@@ -73,8 +123,8 @@ export const Despesa = (props) => {
           notification.success({
             message: "Despesa excluida com sucesso!",
           });
-          fetchDespesas();
-          setIsModalOpen(false);
+          fetchDespesas(paginacao);
+          setIsModalCadastroOpen(false);
         }
       })
       .catch((rejectedValueOrSerializedError) =>
@@ -93,18 +143,33 @@ export const Despesa = (props) => {
             alignItems="center"
             className="py-4"
           >
-            <h2>Despesas</h2>
-            <Tooltip title="Cadastrar nova despesa">
-              <Button
-                type="primary"
-                className="ml-2"
-                size="small"
-                onClick={() => onNova()}
-              >
-                <PlusOutlined />
-                <span>Nova</span>
-              </Button>
-            </Tooltip>
+            <div style={{ display: "inline-flex" }}>
+              <h2>Despesas</h2>
+              <Tooltip title="Filtrar">
+                <Button
+                  type="link"
+                  className="ml-2"
+                  size="small"
+                  onClick={() => onClickButtonFiltro()}
+                >
+                  <SearchOutlined />
+                  <span>{`Filtrar (${countFiltroUtilizado})`}</span>
+                </Button>
+              </Tooltip>
+            </div>
+            <div>
+              <Tooltip title="Cadastrar nova despesa">
+                <Button
+                  type="primary"
+                  className="ml-2"
+                  size="small"
+                  onClick={() => onNova()}
+                >
+                  <PlusOutlined />
+                  <span>Nova</span>
+                </Button>
+              </Tooltip>
+            </div>
           </Flex>
         </div>
       </PageHeaderAlt>
@@ -118,14 +183,20 @@ export const Despesa = (props) => {
       />
       <DespesaCadastroModal
         cadastrar={cadastrar}
-        open={isModalOpen}
+        open={isModalCadastroOpen}
         isEdicao={isEdicao}
         handleCancel={() => {
           setDespesa({});
-          setIsModalOpen(false);
+          setIsEdicao(false);
+          setIsModalCadastroOpen(false);
         }}
         fetchDespesas={fetchDespesas}
         despesa={despesa}
+      />
+      <ModalFiltroDespesa
+        open={isModalFiltroOpen}
+        handleCancel={() => setIsModalFiltroOpen(false)}
+        handlerFiltro={handlerFiltro}
       />
     </div>
   );

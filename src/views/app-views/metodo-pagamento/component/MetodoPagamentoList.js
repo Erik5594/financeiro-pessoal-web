@@ -1,4 +1,4 @@
-import { Avatar, Button, List, Spin } from "antd";
+import { Avatar, Button, List, Popconfirm, Spin } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -8,7 +8,7 @@ const infiniteScroll = {
   borderRadius: "4px",
   overflow: "auto",
   padding: "8px 24px",
-  height: "300px",
+  height: "700px",
 };
 
 export const MetodoPagamentoList = (props) => {
@@ -23,14 +23,30 @@ export const MetodoPagamentoList = (props) => {
 
   const actions = (metodoPagamento) => {
     return [
-      <Button
-        type="primary"
-        danger
-        title="Excluir"
-        size="small"
-        onClick={() => excluirMetodoPagamento(metodoPagamento)}
-        icon={<DeleteOutlined />}
-      />,
+      <Popconfirm
+        placement="bottom"
+        title="Tem certeza que deseja excluir esse metodo de pagamento?"
+        okText="Sim"
+        cancelText="Não"
+        onConfirm={(event) => {
+          event.stopPropagation();
+          excluirMetodoPagamento(metodoPagamento);
+        }}
+        onCancel={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        <Button
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+          size="small"
+          type="primary"
+          danger
+          title="Excluir"
+          icon={<DeleteOutlined />}
+        />
+      </Popconfirm>,
       <Button
         type="primary"
         title="Editar"
@@ -42,20 +58,23 @@ export const MetodoPagamentoList = (props) => {
   };
 
   const getDescricao = (metodoPagamentoDesc) => {
-    if(metodoPagamentoDesc?.descricao){
+    if (metodoPagamentoDesc?.descricao) {
       return metodoPagamentoDesc?.descricao;
     }
 
-    if(metodoPagamentoDesc?.diaVencimento > 0 && metodoPagamentoDesc?.diasParaFechamento > 0){
-      return `Dia do vencimento ${metodoPagamentoDesc?.diaVencimento}, fecha ${metodoPagamentoDesc?.diasParaFechamento} dias antes do vencimento.`
+    if (
+      metodoPagamentoDesc?.diaVencimento > 0 &&
+      metodoPagamentoDesc?.diasParaFechamento > 0
+    ) {
+      return `Dia do vencimento ${metodoPagamentoDesc?.diaVencimento}, fecha ${metodoPagamentoDesc?.diasParaFechamento} dias antes do vencimento.`;
     }
 
-    if(metodoPagamentoDesc?.diaVencimento > 0){
-      return `Dia do vencimento ${metodoPagamentoDesc?.diaVencimento}, sem informações sobre fechamento.`
+    if (metodoPagamentoDesc?.diaVencimento > 0) {
+      return `Dia do vencimento ${metodoPagamentoDesc?.diaVencimento}, sem informações sobre fechamento.`;
     }
 
     return metodoPagamentoDesc?.descricao;
-  }
+  };
 
   return (
     <div style={infiniteScroll}>
