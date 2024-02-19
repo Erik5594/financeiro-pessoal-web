@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
 import TableDespesa from "./componentes/TableDespesa";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { connect } from "react-redux";
 import {
   listar,
   cadastrar,
   excluir,
+  excluirVarios,
   buscarById,
+  pagar,
+  pagarVarias,
 } from "store/slices/despesaSlice";
-import { Button, Form, Tooltip, notification } from "antd";
+import { Button, Divider, Popconfirm, Tooltip, notification } from "antd";
 import PageHeaderAlt from "components/layout-components/PageHeaderAlt";
 import Flex from "components/shared-components/Flex";
 import DespesaCadastroModal from "./DespesaCadastroModal";
@@ -21,8 +29,18 @@ const titulo = {
 };
 
 export const Despesa = (props) => {
-  const { listar, cadastrar, excluir, despesas, buscarById, loading, content } =
-    props;
+  const {
+    listar,
+    cadastrar,
+    excluir,
+    excluirVarios,
+    despesas,
+    buscarById,
+    pagar,
+    loading,
+    content,
+    pagarVarias,
+  } = props;
 
   const [paginacao, setPaginacao] = useState({
     size: 10,
@@ -42,9 +60,13 @@ export const Despesa = (props) => {
   const [isEdicao, setIsEdicao] = useState(false);
   const [despesa, setDespesa] = useState({});
   const [countFiltroUtilizado, setCountFiltroUtilizado] = useState(1);
+  const [despesasSelecionadas, setDespesasSelecionadas] = useState([]);
 
-  const fetchDespesas = (pageable = {...paginacao}, filtro = {...filtroState}) => {
-    listar({pageable, filtro});
+  const fetchDespesas = (
+    pageable = { ...paginacao },
+    filtro = { ...filtroState }
+  ) => {
+    listar({ pageable, filtro });
   };
 
   useEffect(() => {
@@ -60,32 +82,59 @@ export const Despesa = (props) => {
   };
 
   const handlerFiltro = (values) => {
-    const filtroAux = {...values}
+    const filtroAux = { ...values };
     setFiltroState(filtroAux);
     setCountFiltroUtilizado(countFiltros(filtroAux));
     fetchDespesas(paginacao, filtroAux);
-  }
+  };
+
+  const onPagar = async (id) => {
+    await pagar({
+      id,
+    })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          notification.success({
+            message: "Despesa paga com sucesso!",
+          });
+          fetchDespesas(paginacao);
+          setIsModalCadastroOpen(false);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        notification.error({
+          message: "Ocorreu um erro ao tentar pagar despesa!",
+        })
+      );
+  };
+
+  const onChangeDespesasSelecionadas = (despesasSelecionadas) => {
+    setDespesasSelecionadas([...despesasSelecionadas]);
+  };
 
   const countFiltros = (filtro) => {
     let contador = 0;
-    if(filtro.competencia){
+    if (filtro.competencia) {
       contador++;
     }
 
-    if(filtro.vencimento){
+    if (filtro.vencimento) {
       contador++;
     }
 
-    if(filtro.tipoSituacao){
+    if (filtro.tipoSituacao) {
       contador++;
     }
 
-    if(filtro.valorCategoria){
+    if (filtro.descricao) {
+      contador++;
+    }
+
+    if (filtro.idMetodoPagamento) {
       contador++;
     }
     return contador;
-
-  }
+  };
 
   const onEditar = (id) => {
     setIsEdicao(true);
@@ -93,7 +142,18 @@ export const Despesa = (props) => {
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
           const retorno = originalPromiseResult.payload;
-          setDespesa(retorno);
+          let retornoAux = { ...retorno };
+          let categoriasParcelada = [];
+          if (retorno.qtdeParcela > 0) {
+            categoriasParcelada = retorno.categorias.map(
+              (categoriaDespesa) => ({
+                ...categoriaDespesa,
+                valor: categoriaDespesa.valor * retorno.qtdeParcela,
+              })
+            );
+            retornoAux = { ...retornoAux, categorias: categoriasParcelada };
+          }
+          setDespesa(retornoAux);
           setIsModalCadastroOpen(true);
         }
       })
@@ -108,7 +168,7 @@ export const Despesa = (props) => {
       ...paginacao,
       page: page - 1,
     };
-    
+
     setPaginacao(pageAux);
 
     fetchDespesas(pageAux);
@@ -132,6 +192,64 @@ export const Despesa = (props) => {
           message: "Ocorreu um erro ao tentar excluir despesa!",
         })
       );
+  };
+
+  const onPagarSelecionadas = async () => {
+    const idSelecionadas = [
+      ...despesasSelecionadas.map((despesa) => despesa.id),
+    ];
+    await pagarVarias(idSelecionadas)
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          notification.success({
+            message: "Despesas pagas com sucesso!",
+          });
+          fetchDespesas(paginacao);
+          setIsModalCadastroOpen(false);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        notification.error({
+          message: "Ocorreu um erro ao tentar pagar as despesas!",
+        })
+      );
+  };
+
+  const onExcluirSelecionadas = async () => {
+    const idSelecionadas = [
+      ...despesasSelecionadas.map((despesa) => despesa.id),
+    ];
+    await excluirVarios(idSelecionadas)
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          notification.success({
+            message: "Despesas excluidas com sucesso!",
+          });
+          fetchDespesas(paginacao);
+          setIsModalCadastroOpen(false);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        notification.error({
+          message: "Ocorreu um erro ao tentar excluir as despesas!",
+        })
+      );
+  };
+
+  const AcoesSelecionadas = () => {
+    return <div></div>;
+  };
+
+  const TituloFiltro = () => {
+    return (
+      <span>
+        Filtros: {filtroState.competencia ? `Competência; ` : ""}
+        {filtroState.vencimento ? `Vencimento; ` : ""}
+        {filtroState.tipoSituacao ? `Situação; ` : ""}
+        {filtroState.descricao ? `Descrição; ` : ""}
+        {filtroState.idMetodoPagamento ? `Metodo pagamento; ` : ""}
+      </span>
+    );
   };
 
   return (
@@ -161,14 +279,110 @@ export const Despesa = (props) => {
               <Tooltip title="Cadastrar nova despesa">
                 <Button
                   type="primary"
+                  shape="circle"
                   className="ml-2"
                   size="small"
                   onClick={() => onNova()}
-                >
-                  <PlusOutlined />
-                  <span>Nova</span>
-                </Button>
+                  icon={<PlusOutlined />}
+                ></Button>
               </Tooltip>
+              <Divider type="vertical" />
+              <Tooltip
+                title="Marcar todas despesas selecionadas como 'Pagas'."
+                placement="topLeft"
+              >
+                <Popconfirm
+                  placement="bottom"
+                  title={
+                    <span>
+                      <strong>
+                        MARCAR {`(${despesasSelecionadas.length})`} DESPESAS
+                        COMO PAGA:
+                      </strong>
+                      <br />
+                      <br />
+                      Todas as despesas selecionadas serão marcadas como
+                      'Pagas'.
+                      <br />
+                      <br /> Deseja continuar?
+                    </span>
+                  }
+                  okText="Sim"
+                  cancelText="Não"
+                  onConfirm={(event) => {
+                    event.stopPropagation();
+                    onPagarSelecionadas();
+                  }}
+                  onCancel={(event) => {
+                    event.stopPropagation();
+                  }}
+                >
+                  <Button
+                    title="Pagar"
+                    size="small"
+                    shape="circle"
+                    disabled={despesasSelecionadas.length < 1}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                    icon={<UploadOutlined />}
+                  />
+                </Popconfirm>
+              </Tooltip>
+              <Divider type="vertical" />
+              <Tooltip
+                title="Excluir todas despesas selecionadas."
+                placement="topLeft"
+              >
+                <Popconfirm
+                  placement="bottom"
+                  title={
+                    <span>
+                      <strong>
+                        EXCLUIR {`(${despesasSelecionadas.length})`} DESPESAS
+                        SELECIONADAS:
+                      </strong>
+                      <br />
+                      <br />
+                      Todas despesas selecionadas serão excluídas, EXCETO as
+                      despesas com parcelamento.
+                      <br />
+                      <br /> Deseja continuar?
+                    </span>
+                  }
+                  okText="Sim"
+                  cancelText="Não"
+                  onConfirm={(event) => {
+                    event.stopPropagation();
+                    onExcluirSelecionadas();
+                  }}
+                  onCancel={(event) => {
+                    event.stopPropagation();
+                  }}
+                >
+                  <Button
+                    disabled={despesasSelecionadas.length < 1}
+                    shape="circle"
+                    type="primary"
+                    danger
+                    title="Excluir"
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                    icon={<DeleteOutlined />}
+                  />
+                </Popconfirm>
+              </Tooltip>
+            </div>
+          </Flex>
+          <Flex
+            justifyContent="space-between"
+            alignItems="center"
+            className="py-4"
+          >
+            <div>
+              <TituloFiltro />
             </div>
           </Flex>
         </div>
@@ -177,6 +391,8 @@ export const Despesa = (props) => {
         despesas={despesas}
         onEditar={onEditar}
         onExcluir={onExcluir}
+        onPagar={onPagar}
+        onChangeDespesasSelecionadas={onChangeDespesasSelecionadas}
         loading={loading}
         content={content}
         onChangePage={onChangePage}
@@ -217,7 +433,10 @@ const mapDispatchToProps = {
   listar,
   cadastrar,
   excluir,
+  excluirVarios,
   buscarById,
+  pagar,
+  pagarVarias,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Despesa);

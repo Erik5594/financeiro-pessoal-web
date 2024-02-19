@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Col,
   Divider,
   Form,
@@ -17,6 +18,7 @@ const fielsDefault = [
   { name: ["descricao"], value: undefined },
   { name: ["diaVencimento"], value: undefined },
   { name: ["diasParaFechamento"], value: undefined },
+  { name: ["isCartaoCredito"], value: false },
 ];
 
 export const MetodosPagamentoModal = (props) => {
@@ -25,6 +27,7 @@ export const MetodosPagamentoModal = (props) => {
 
   const [form] = Form.useForm();
   const [fields, setFields] = useState([]);
+  const [isCartaoCredito, setIsCartaoCredito] = useState(false);
 
   const onCancel = () => {
     form.resetFields();
@@ -44,16 +47,47 @@ export const MetodosPagamentoModal = (props) => {
     const fieldsEdicao = [];
     if (metodoPagamento?.id) {
       fieldsEdicao.push({ name: ["nome"], value: metodoPagamento.nome });
-      fieldsEdicao.push({ name: ["descricao"], value: metodoPagamento.descricao });
-      fieldsEdicao.push({ name: ["diaVencimento"], value: metodoPagamento.diaVencimento });
-      fieldsEdicao.push({ name: ["diasParaFechamento"], value: metodoPagamento.diasParaFechamento });
+      fieldsEdicao.push({
+        name: ["descricao"],
+        value: metodoPagamento.descricao,
+      });
+      fieldsEdicao.push({
+        name: ["diaVencimento"],
+        value: metodoPagamento.diaVencimento,
+      });
+      fieldsEdicao.push({
+        name: ["diasParaFechamento"],
+        value: metodoPagamento.diasParaFechamento,
+      });
+      fieldsEdicao.push({
+        name: ["isCartaoCredito"],
+        value: metodoPagamento?.tipoMetodoPagamento === "CARTAO_CREDITO",
+      });
+      fieldsEdicao.push({
+        name: ["padrao"],
+        value: metodoPagamento?.padrao,
+      });
 
-      setFields(fieldsEdicao)
+      setFields(fieldsEdicao);
+      setIsCartaoCredito(
+        metodoPagamento?.tipoMetodoPagamento === "CARTAO_CREDITO"
+      );
     }
   };
 
   const onCadastrarAction = async (values) => {
-    const metodoPagamentoAux = { ...metodoPagamento, ...values };
+    
+    let metodoPagamentoAux = {
+      ...metodoPagamento,
+      ...values,
+      tipoMetodoPagamento: values.isCartaoCredito ? "CARTAO_CREDITO" : "OUTROS",
+    };
+    if (!values.isCartaoCredito) {
+      delete metodoPagamentoAux.diaVencimento;
+      delete metodoPagamentoAux.diasParaFechamento;
+    }
+    delete metodoPagamentoAux.isCartaoCredito;
+
     await cadastrar(metodoPagamentoAux)
       .then((originalPromiseResult) => {
         notification.success({
@@ -85,6 +119,7 @@ export const MetodosPagamentoModal = (props) => {
         layout="vertical"
         form={form}
         name="cadastroMetodoPagamento"
+        size="size"
         fields={fields}
         onFieldsChange={(changedFields, allFields) => {
           setFields(allFields);
@@ -92,7 +127,7 @@ export const MetodosPagamentoModal = (props) => {
         onFinish={(values) => onCadastrarAction(values)}
       >
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12}>
+          <Col xs={24} sm={24} md={10}>
             <Form.Item
               name="nome"
               label="Nome"
@@ -101,7 +136,7 @@ export const MetodosPagamentoModal = (props) => {
               <Input />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={12}>
+          <Col xs={24} sm={24} md={10}>
             <Form.Item
               name="descricao"
               label="Descrição"
@@ -110,27 +145,52 @@ export const MetodosPagamentoModal = (props) => {
               <Input />
             </Form.Item>
           </Col>
+          <Col>
+            <Form.Item
+              name="padrao"
+              label="Padrão?"
+              valuePropName="checked"
+              rules={[{ required: false }]}
+            >
+              <Checkbox />
+            </Form.Item>
+          </Col>
         </Row>
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12}>
+          <Col xxl>
             <Form.Item
-              layout="vertical"
-              name="diaVencimento"
-              label="Dia do vencimento"
+              name="isCartaoCredito"
+              label="Cartão de crédito?"
+              valuePropName="checked"
               rules={[{ required: false }]}
             >
-              <InputNumber min={1} max={31} />
+              <Checkbox
+                onChange={(event) => setIsCartaoCredito(event.target.checked)}
+                value={isCartaoCredito}
+              />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={12}>
-            <Form.Item
-              name="diasParaFechamento"
-              label="Dias para fechamento"
-              rules={[{ required: false }]}
-            >
-              <InputNumber min={1} max={15} />
-            </Form.Item>
-          </Col>
+          <div style={{ display: isCartaoCredito ? "flex" : "none" }}>
+            <Col xxl>
+              <Form.Item
+                layout="vertical"
+                name="diaVencimento"
+                label="Dia do vencimento"
+                rules={[{ required: false }]}
+              >
+                <InputNumber min={1} max={31} disabled={!isCartaoCredito} />
+              </Form.Item>
+            </Col>
+            <Col xxl>
+              <Form.Item
+                name="diasParaFechamento"
+                label="Dias para fechamento"
+                rules={[{ required: false }]}
+              >
+                <InputNumber min={1} max={15} disabled={!isCartaoCredito} />
+              </Form.Item>
+            </Col>
+          </div>
         </Row>
         <Row gutter={16}>
           <Col xs={24} sm={24} md={24}>

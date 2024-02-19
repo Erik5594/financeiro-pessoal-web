@@ -48,12 +48,48 @@ export const excluir = createAsyncThunk(
   }
 );
 
+export const excluirVarios = createAsyncThunk(
+  "despesa/excluirVarios",
+  async (data, { rejectWithValue }) => {
+    try {
+      await DespesaService.excluirVarios(data);
+      return true;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Error");
+    }
+  }
+);
+
 export const buscarById = createAsyncThunk(
   "despesa/buscarById",
   async (data, { rejectWithValue }) => {
     try {
       const response = await DespesaService.buscarById({ id: data.id });
       return response;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Error");
+    }
+  }
+);
+
+export const pagar = createAsyncThunk(
+  "despesa/pagar",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await DespesaService.pagar({ id: data.id });
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Error");
+    }
+  }
+);
+
+export const pagarVarias = createAsyncThunk(
+  "despesa/pagarVarias",
+  async (data, { rejectWithValue }) => {
+    try {
+      await DespesaService.pagarVarias(data);
+      return true;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Error");
     }
@@ -101,6 +137,45 @@ export const despesaSlice = createSlice({
         state.showMessage = true;
       })
       .addCase(excluir.rejected, (state, action) => {
+        state.message = action.payload;
+        state.showMessage = true;
+        state.loading = false;
+      })
+      .addCase(excluirVarios.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(excluirVarios.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = "Cadastros excluidos com sucesso!";
+        state.showMessage = true;
+      })
+      .addCase(excluirVarios.rejected, (state, action) => {
+        state.message = action.payload;
+        state.showMessage = true;
+        state.loading = false;
+      })
+      .addCase(pagar.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(pagar.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = "Registro pago com sucesso!";
+        state.showMessage = true;
+      })
+      .addCase(pagar.rejected, (state, action) => {
+        state.message = action.payload;
+        state.showMessage = true;
+        state.loading = false;
+      })
+      .addCase(pagarVarias.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(pagarVarias.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = "Cadastros pagos com sucesso!";
+        state.showMessage = true;
+      })
+      .addCase(pagarVarias.rejected, (state, action) => {
         state.message = action.payload;
         state.showMessage = true;
         state.loading = false;

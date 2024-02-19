@@ -1,5 +1,11 @@
-import { Avatar, Button, List, Popconfirm, Spin } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Avatar, Button, List, Popconfirm, Spin, Tag, Tooltip } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  CreditCardOutlined,
+  CheckOutlined,
+  DollarOutlined,
+} from "@ant-design/icons";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -76,6 +82,21 @@ export const MetodoPagamentoList = (props) => {
     return metodoPagamentoDesc?.descricao;
   };
 
+  const titulo = (metodoPagamento) => {
+    return (
+      <span>
+        {metodoPagamento.nome}{" "}
+        {metodoPagamento.padrao ? (
+          <Tooltip title="Padrão" placement="topLeft">
+            <Tag color="green">
+              <CheckOutlined />
+            </Tag>
+          </Tooltip>
+        ) : null}
+      </span>
+    );
+  };
+
   return (
     <div style={infiniteScroll}>
       <InfiniteScroll
@@ -94,9 +115,21 @@ export const MetodoPagamentoList = (props) => {
             >
               <List.Item.Meta
                 avatar={
-                  <Avatar src="https://as2.ftcdn.net/v2/jpg/00/72/77/79/1000_F_72777900_PuZflEq56bzqNr7SqGq2X59MsfC9aDPp.jpg" />
+                  <Avatar
+                    icon={
+                      metodoPagamento?.tipoMetodoPagamento ===
+                      "CARTAO_CREDITO" ? (
+                        <CreditCardOutlined />
+                      ) : (
+                        <DollarOutlined />
+                      )
+                    }
+                    style={{
+                      backgroundColor: "#87d068",
+                    }}
+                  />
                 }
-                title={metodoPagamento.nome}
+                title={titulo(metodoPagamento)}
                 description={getDescricao(metodoPagamento) || ""}
               />
             </List.Item>

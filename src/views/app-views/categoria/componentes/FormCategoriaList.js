@@ -1,23 +1,22 @@
-import { Col, Form, Input, InputNumber, Row, Select } from "antd";
+import { Button, Col, Form, Input, InputNumber, Row, Select } from "antd";
+import { CheckOutlined } from "@ant-design/icons";
 import React from "react";
 
 const { Option } = Select;
 
 export const FormCategoriaList = (props) => {
-  const { categorias } = props;
+  const { categorias, onAddCategoria, form } = props;
 
   return (
     <Row gutter={16}>
-      <Col xs={24} sm={24} md={8}>
+      <Col xs={24} sm={24} md={7}>
         <Form.Item
           name="idCategoria"
           label="Categoria"
           validateTrigger={["onChange", "onBlur"]}
           rules={[
             {
-              required: true,
-              whitespace: true,
-              message: "Selecione uma categoria.",
+              required: false,
             },
           ]}
         >
@@ -52,7 +51,7 @@ export const FormCategoriaList = (props) => {
           <Input placeholder="Descrição" />
         </Form.Item>
       </Col>
-      <Col xs={24} sm={24} md={6}>
+      <Col xs={24} sm={24} md={5}>
         <Form.Item
           validateTrigger={["onChange", "onBlur"]}
           name="valorCategoria"
@@ -65,7 +64,18 @@ export const FormCategoriaList = (props) => {
             prefix="R$"
             decimalSeparator=","
             precision={2}
-            step={1.00}
+            step={1.0}
+          />
+        </Form.Item>
+      </Col>
+      <Col xs={24} sm={24} md={2}>
+        <Form.Item label=" ">
+          <Button
+            shape="circle"
+            type="dashed"
+            onClick={() => onAddCategoria()}
+            size="small"
+            icon={<CheckOutlined style={{ color: "green" }} />}
           />
         </Form.Item>
       </Col>

@@ -1,4 +1,4 @@
-import { DashboardOutlined } from '@ant-design/icons';
+import { DashboardOutlined, DollarOutlined } from '@ant-design/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 
@@ -24,7 +24,7 @@ const dashBoardNavTree = [{
   key: 'despesas',
   path: `${APP_PREFIX_PATH}/despesa`,
   title: 'sidenav.despesa',
-  icon: DashboardOutlined,
+  icon: DollarOutlined,
   breadcrumb: false,
   isGroupTitle: true,
   submenu: [
@@ -32,7 +32,7 @@ const dashBoardNavTree = [{
       key: 'listaDespesas',
       path: `${APP_PREFIX_PATH}/despesa`,
       title: 'sidenav.despesa.lista',
-      icon: DashboardOutlined,
+      icon: DollarOutlined,
       breadcrumb: false,
       submenu: []
     }

@@ -1,7 +1,8 @@
 import { Button, Modal, Row, Form, Col, Input, DatePicker, Select } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import locale from "antd/es/date-picker/locale/pt_BR";
+import metodoPagamentoService from "services/MetodoPagamentoService";
 
 const { Option } = Select;
 const { MonthPicker } = DatePicker;
@@ -9,12 +10,11 @@ const { MonthPicker } = DatePicker;
 const fielsDefault = [
   { name: ["competencia"], value: dayjs(dayjs(), "DD/MM/YYYY") },
   { name: ["vencimento"], value: null },
-  { name: ["tipoSituacao"], value: "TODAS" },
-  { name: ["valorCategoria"], value: 0 },
+  { name: ["idMetodoPagamento"], value: undefined },
+  { name: ["descricao"], value: undefined },
 ];
 
 const situacaoMetodoPagamento = [
-  { value: "TODAS", descricao: "Todas" },
   { value: "EM_ABERTO", descricao: "Em aberto" },
   { value: "PAGO", descricao: "Pago" },
   { value: "PARCIALMENTE_PAGO", descricao: "Parcialmente pago" },
@@ -24,7 +24,33 @@ const situacaoMetodoPagamento = [
 export const ModalFiltroDespesa = (props) => {
   const { open, handleCancel, handlerFiltro } = props;
   const [fields, setFields] = useState(fielsDefault);
+  const filtroMetodoPagamento = { page: 0, size: 500, nome: "" };
   const [form] = Form.useForm();
+  const [listaMetodoPagamento, setListaMetodoPagamento] = useState([]);
+
+  useEffect(() => {
+    fetchMetodoPagamento();
+  }, []);
+
+  const fetchMetodoPagamento = (filtro = filtroMetodoPagamento) => {
+    metodoPagamentoService
+      .listar({ ...filtroMetodoPagamento, nome: filtro.nome })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          const metodosPagamentos = originalPromiseResult.content;
+          const metodoPagamentoPadrao = metodosPagamentos.find(
+            (metodoPagamento) => metodoPagamento.padrao
+          );
+          setListaMetodoPagamento(metodosPagamentos);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        console.log(
+          "Erro carregar formas pagamentos...",
+          rejectedValueOrSerializedError
+        )
+      );
+  };
 
   const onCancel = () => {
     handleCancel();
@@ -32,9 +58,6 @@ export const ModalFiltroDespesa = (props) => {
 
   const onCadastrarAction = (values) => {
     let filtroAux = {...values}
-    if(filtroAux.tipoSituacao === 'TODAS'){
-      delete filtroAux.tipoSituacao;
-    }
     handlerFiltro(filtroAux);
     handleCancel();
   }
@@ -79,6 +102,39 @@ export const ModalFiltroDespesa = (props) => {
           </Col>
         </Row>
         <Row gutter={16}>
+        <Col xs={24} sm={24} md={11}>
+            <Form.Item
+              name="idMetodoPagamento"
+              label="Forma de pagamento"
+              validateTrigger={["onChange", "onBlur"]}
+            >
+              <Select
+                allowClear
+                showSearch
+                placeholder="Selecionar forma de pagamento"
+                optionFilterProp="children"
+                filterOption={(input, option) => {
+                  return (
+                    option.props.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+              >
+                {listaMetodoPagamento.map((formaPagamento, index) => (
+                  <Option
+                    diaFechamento={formaPagamento.diasParaFechamento}
+                    diaVencimento={formaPagamento.diaVencimento}
+                    tipoMetodoPagamento={formaPagamento.tipoMetodoPagamento}
+                    key={index}
+                    value={formaPagamento.id}
+                  >
+                    {formaPagamento.nome}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
           <Col xs={24} sm={24} md={6}>
             <Form.Item
               name="vencimento"
@@ -99,6 +155,7 @@ export const ModalFiltroDespesa = (props) => {
               validateTrigger={["onChange", "onBlur"]}
             >
               <Select
+                allowClear
                 showSearch
                 placeholder="Selecionar situação"
                 optionFilterProp="children"

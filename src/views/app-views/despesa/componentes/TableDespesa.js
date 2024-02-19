@@ -1,5 +1,9 @@
-import { Button, Divider, Pagination, Popconfirm, Table, Tag } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Divider, Popconfirm, Table, Tag } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import React from "react";
 
@@ -7,10 +11,18 @@ export const TableDespesa = ({
   despesas,
   onEditar,
   onExcluir,
+  onPagar,
   loading,
   content,
   onChangePage,
+  onChangeDespesasSelecionadas,
 }) => {
+  const rowSelectionConfig = {
+    onChange: (idsDespesas, despesas) => {
+      onChangeDespesasSelecionadas(despesas);
+    },
+  };
+
   const getSituacaoFormatada = (situacao) => {
     switch (situacao) {
       case "EM_ABERTO":
@@ -54,6 +66,16 @@ export const TableDespesa = ({
       title: "Descrição",
       dataIndex: "descricao",
       key: "descricao",
+      render: (descricao, despesa) => {
+        return (
+          <div>
+            {descricao}
+            {despesa.qtdeParcela > 0
+              ? ` - [${despesa.numParcela}/${despesa.qtdeParcela}]`
+              : ""}
+          </div>
+        );
+      },
     },
     {
       title: "Vencimento",
@@ -84,30 +106,72 @@ export const TableDespesa = ({
     {
       title: "",
       key: "action",
-      render: (text, a) => (
+      render: (text, despesa) => (
         <span>
           <Button
+            shape="circle"
             type="primary"
             title="Editar"
             size="small"
-            onClick={() => onEditar(a.id)}
+            onClick={() => onEditar(despesa.id)}
             icon={<EditOutlined />}
           />
           <Divider type="vertical" />
           <Popconfirm
             placement="bottom"
-            title="Tem certeza que deseja excluir essa despesa?"
+            title="Tem certeza que deseja marcar como pago essa despesa?"
             okText="Sim"
             cancelText="Não"
             onConfirm={(event) => {
               event.stopPropagation();
-              onExcluir(a.id);
+              onPagar(despesa.id);
             }}
             onCancel={(event) => {
               event.stopPropagation();
             }}
           >
             <Button
+              shape="circle"
+              title="Pagar"
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              icon={<UploadOutlined />}
+            />
+          </Popconfirm>
+          <Divider type="vertical" />
+          <Popconfirm
+            placement="bottom"
+            title={
+              despesa.qtdeParcela > 0 ? (
+                <span>
+                  <strong>DESPESA PARCELADA:</strong>
+                  <br />
+                  <br />
+                  Será removido todas parcelas, inclusive já PAGAS e
+                  competências anteriores.
+                  <br /> Sendo assim poderá influenciar em competências
+                  anteriores.
+                  <br />
+                  <br /> Deseja continuar?
+                </span>
+              ) : (
+                "Tem certeza que deseja excluir essa despesa?"
+              )
+            }
+            okText="Sim"
+            cancelText="Não"
+            onConfirm={(event) => {
+              event.stopPropagation();
+              onExcluir(despesa.id);
+            }}
+            onCancel={(event) => {
+              event.stopPropagation();
+            }}
+          >
+            <Button
+              shape="circle"
               type="primary"
               danger
               title="Excluir"
@@ -129,6 +193,7 @@ export const TableDespesa = ({
 
   return (
     <Table
+      rowSelection={rowSelectionConfig}
       columns={columns}
       dataSource={despesas}
       rowKey={(despesa) => despesa.id}
@@ -136,10 +201,19 @@ export const TableDespesa = ({
       loading={loading}
       expandable={{
         expandedRowRender: (registro) => (
-          <p style={{ margin: 0 }}>{registro.observacao}</p>
+          <div>
+            Categorias:
+            {registro.categorias.map((categoria) => {
+              return (
+                <p style={{ margin: 0 }} key={categoria.idCategoria}>
+                  {`${categoria.categoria.nome} -> ${getTotal([categoria])}`}
+                </p>
+              );
+            })}
+          </div>
         ),
-        rowExpandable: (registro) =>
-          registro.observacao && registro.observacao.length > 2,
+        rowExpandable: (despesa) =>
+          despesa.categorias && despesa.categorias.length > 0,
       }}
       pagination={{
         onChange: onChange,
