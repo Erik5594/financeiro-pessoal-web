@@ -73,6 +73,10 @@ export const Despesa = (props) => {
     fetchDespesas(paginacao);
   }, []);
 
+  useEffect(() => {
+    atualizarSelecionadas();
+  }, [despesas]);
+
   const onNova = (data) => {
     setIsModalCadastroOpen(true);
   };
@@ -143,16 +147,6 @@ export const Despesa = (props) => {
         if (originalPromiseResult.payload !== "Error") {
           const retorno = originalPromiseResult.payload;
           let retornoAux = { ...retorno };
-          let categoriasParcelada = [];
-          if (retorno.qtdeParcela > 0) {
-            categoriasParcelada = retorno.categorias.map(
-              (categoriaDespesa) => ({
-                ...categoriaDespesa,
-                valor: categoriaDespesa.valor * retorno.qtdeParcela,
-              })
-            );
-            retornoAux = { ...retornoAux, categorias: categoriasParcelada };
-          }
           setDespesa(retornoAux);
           setIsModalCadastroOpen(true);
         }
@@ -206,6 +200,10 @@ export const Despesa = (props) => {
           });
           fetchDespesas(paginacao);
           setIsModalCadastroOpen(false);
+          const despesasSelecionadasAux = despesas.filter((despesa) =>
+            despesasSelecionadas.anyMatch((id) => id === despesa.id)
+          );
+          console.log("Teste...", despesasSelecionadasAux);
         }
       })
       .catch((rejectedValueOrSerializedError) =>
@@ -214,6 +212,18 @@ export const Despesa = (props) => {
         })
       );
   };
+
+  function atualizarSelecionadas() {
+    let despesasSelecionadasAux = [];
+    if (!!despesas) {
+      despesasSelecionadasAux = despesas.filter((despesa) => {
+        return !!despesasSelecionadas.find(
+          (despesaSelect) => despesaSelect.id === despesa.id
+        );
+      });
+    }
+    setDespesasSelecionadas([...despesasSelecionadasAux]);
+  }
 
   const onExcluirSelecionadas = async () => {
     const idSelecionadas = [

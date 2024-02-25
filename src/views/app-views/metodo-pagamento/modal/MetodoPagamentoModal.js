@@ -7,31 +7,75 @@ import {
   Input,
   InputNumber,
   Modal,
+  Radio,
   Row,
+  Tooltip,
   notification,
 } from "antd";
+import dayjs from "dayjs";
 import React, { Fragment, useEffect } from "react";
 import { useState } from "react";
+import MetodoPagamentoService from "services/MetodoPagamentoService";
 
-const fielsDefault = [
-  { name: ["nome"], value: undefined },
-  { name: ["descricao"], value: undefined },
-  { name: ["diaVencimento"], value: undefined },
-  { name: ["diasParaFechamento"], value: undefined },
-  { name: ["isCartaoCredito"], value: false },
-];
+const formDefault = {
+  nome: undefined,
+  descricao: undefined,
+  padrao: false,
+  isCartaoCredito: false,
+  diaVencimento: 10,
+  diasParaFechamento: 7,
+  tipoLancamentoCompetencia: "DENTRO_MES",
+};
 
 export const MetodosPagamentoModal = (props) => {
   const { open, handleCancel, isEdicao, cadastrar, fetch, metodoPagamento } =
     props;
 
   const [form] = Form.useForm();
-  const [fields, setFields] = useState([]);
   const [isCartaoCredito, setIsCartaoCredito] = useState(false);
+  const [{ dataVencimento, dataCompetencia, lancamentoAte }, setDatas] = useState({
+    dataVencimento: dayjs().format("DD/MM/YYYY"),
+    dataCompetencia: dayjs().format("MM/YYYY"),
+    lancamentoAte: dayjs().format("DD/MM/YYYY"),
+  });
+
+  function atualizarDatas() {
+    if (isCartaoCredito) {
+      buscarDataVencimento();
+    }
+  }
+
+  async function buscarDataVencimento() {
+    try {
+      const data = {
+        dataBase: dayjs().format("DD/MM/YYYY"),
+        tipoLancamentoCompetencia: form.getFieldValue(
+          "tipoLancamentoCompetencia"
+        ),
+        diaVencimento: form.getFieldValue("diaVencimento"),
+        diasFechamento: form.getFieldValue("diasParaFechamento"),
+      };
+      const response =
+        await MetodoPagamentoService.buscarDatasSemMetodoPagamento(data);
+      setDatas({
+        ...response,
+        dataCompetencia: dayjs(response.dataCompetencia, "DD/MM/YYYY").isBefore(
+          dayjs()
+        )
+          ? dayjs().format("MM/YYYY")
+          : dayjs(response.dataCompetencia, "DD/MM/YYYY").format("MM/YYYY"),
+      });
+    } catch (err) {
+      console.log(
+        "Ocorreu um erro ao consultar a data de vencimento da forma de pagamento.",
+        err
+      );
+    }
+  }
 
   const onCancel = () => {
     form.resetFields();
-    form.setFields(fielsDefault);
+    setIsCartaoCredito(false);
     handleCancel();
   };
 
@@ -67,8 +111,12 @@ export const MetodosPagamentoModal = (props) => {
         name: ["padrao"],
         value: metodoPagamento?.padrao,
       });
+      fieldsEdicao.push({
+        name: ["tipoLancamentoCompetencia"],
+        value: metodoPagamento?.tipoLancamentoCompetencia,
+      });
 
-      setFields(fieldsEdicao);
+      form.setFields(fieldsEdicao);
       setIsCartaoCredito(
         metodoPagamento?.tipoMetodoPagamento === "CARTAO_CREDITO"
       );
@@ -76,7 +124,6 @@ export const MetodosPagamentoModal = (props) => {
   };
 
   const onCadastrarAction = async (values) => {
-    
     let metodoPagamentoAux = {
       ...metodoPagamento,
       ...values,
@@ -101,6 +148,20 @@ export const MetodosPagamentoModal = (props) => {
       );
   };
 
+  const DescVencimento = () => {
+    return (
+      <div style={{ display: "flex", justifyContent: "start", width: "100%" }}>
+        <span style={{ color: "#939393", fontStyle: "italic" }}>
+          Cadastrando um despesa hoje({dayjs().format("DD/MM/YYYY")}) com essa forma de pagamento, ficaria assim:<br/>
+          <strong>Data de lançamento até: {lancamentoAte}</strong><br/>
+          <strong>Competência {dataCompetencia}</strong><br/>
+          <strong>Vencimento: {dataVencimento}</strong><br/>
+          <strong>Melhor dia: {dayjs(lancamentoAte, "DD/MM/YYYY").add(1, "day").format("DD/MM/YYYY")}</strong><br/>
+        </span>
+      </div>
+    );
+  };
+
   const getTitle = () => {
     const title = isEdicao
       ? "Editar método de pagamento"
@@ -119,18 +180,14 @@ export const MetodosPagamentoModal = (props) => {
         layout="vertical"
         form={form}
         name="cadastroMetodoPagamento"
-        size="size"
-        fields={fields}
-        onFieldsChange={(changedFields, allFields) => {
-          setFields(allFields);
-        }}
+        initialValues={formDefault}
         onFinish={(values) => onCadastrarAction(values)}
       >
         <Row gutter={16}>
           <Col xs={24} sm={24} md={10}>
             <Form.Item
               name="nome"
-              label="Nome"
+              label="Nome:"
               rules={[{ required: true, message: "Nome é obrigatório!" }]}
             >
               <Input />
@@ -139,7 +196,7 @@ export const MetodosPagamentoModal = (props) => {
           <Col xs={24} sm={24} md={10}>
             <Form.Item
               name="descricao"
-              label="Descrição"
+              label="Descrição:"
               rules={[{ required: false }]}
             >
               <Input />
@@ -157,6 +214,43 @@ export const MetodosPagamentoModal = (props) => {
           </Col>
         </Row>
         <Row gutter={16}>
+          <Col xs={24} sm={24} md={24}>
+            <Form.Item
+              name="tipoLancamentoCompetencia"
+              label="Tipo lançamento da competência:"
+              rules={[
+                { required: true, message: "Tipo de despesa é obrigatório!" },
+              ]}
+            >
+              <Radio.Group
+                onChange={(e) => {
+                  atualizarDatas();
+                }}
+                buttonStyle="solid"
+              >
+                <Tooltip
+                  color="black"
+                  title="Isso significa que a despesa será lançada na competência anterior ao mês do vencimento, por exemplo, suponhamos que estamos no dia 10/02/2024 ao cadastrar uma despesa com o vencimento para o dia 10/03/2024, a mesma será lançada na competência 02/2024, já ao cadastrar uma despesa com o vencimento 20/02/2024 a mesma será lançada na competência 02/2024."
+                >
+                  <Radio.Button value="ANTECIPADA">Antecipado</Radio.Button>
+                </Tooltip>
+                <Tooltip
+                  color="black"
+                  title="Isso significa que a despesa será lançada na competência do mesmo mês que o mês de vencimento, por exemplo, suponhamos que estamos no dia 10/02/2024 ao cadastrar uma despesa com o vencimento para o dia 10/03/2024, a mesma será lançada na competência 03/2024."
+                >
+                  <Radio.Button value="DENTRO_MES">Dentro do mês</Radio.Button>
+                </Tooltip>
+                <Tooltip
+                  color="black"
+                  title="Isso significa que a despesa será lançada na competência posterior ao mês do vencimento, por exemplo, suponhamos que estamos no dia 10/02/2024 ao cadastrar uma despesa com o vencimento para o dia 10/03/2024, a mesma será lançada na competência 04/2024, já ao cadastrar uma despesa com o vencimento 20/02/2024 a mesma será lançada na competência 03/2024."
+                >
+                  <Radio.Button value="POSTECIPADA">Postecipado</Radio.Button>
+                </Tooltip>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
           <Col xxl>
             <Form.Item
               name="isCartaoCredito"
@@ -165,7 +259,12 @@ export const MetodosPagamentoModal = (props) => {
               rules={[{ required: false }]}
             >
               <Checkbox
-                onChange={(event) => setIsCartaoCredito(event.target.checked)}
+                onChange={(event) => {
+                  setIsCartaoCredito(event.target.checked);
+                  if(event.target.checked){
+                    buscarDataVencimento();
+                  }
+                }}
                 value={isCartaoCredito}
               />
             </Form.Item>
@@ -175,23 +274,34 @@ export const MetodosPagamentoModal = (props) => {
               <Form.Item
                 layout="vertical"
                 name="diaVencimento"
-                label="Dia do vencimento"
+                label="Dia do vencimento:"
                 rules={[{ required: false }]}
               >
-                <InputNumber min={1} max={31} disabled={!isCartaoCredito} />
+                <InputNumber
+                  min={1}
+                  max={31}
+                  disabled={!isCartaoCredito}
+                  onChange={() => atualizarDatas()}
+                />
               </Form.Item>
             </Col>
             <Col xxl>
               <Form.Item
                 name="diasParaFechamento"
-                label="Dias para fechamento"
+                label="Dias para fechamento:"
                 rules={[{ required: false }]}
               >
-                <InputNumber min={1} max={15} disabled={!isCartaoCredito} />
+                <InputNumber
+                  min={1}
+                  max={15}
+                  disabled={!isCartaoCredito}
+                  onChange={() => atualizarDatas()}
+                />
               </Form.Item>
             </Col>
           </div>
         </Row>
+        {isCartaoCredito ? <DescVencimento /> : null}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={24}>
             <div style={{ display: "flex", justifyContent: "end" }}>

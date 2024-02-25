@@ -1,11 +1,12 @@
-import { Button, Col, Input, Row, Table, Tooltip } from "antd";
-import { MinusOutlined } from "@ant-design/icons";
+import { Button, Col, Divider, Input, Row, Table, Tooltip } from "antd";
+import { MinusOutlined, EditOutlined } from "@ant-design/icons";
 import React from "react";
 
 export const TableCategoriaDespesa = ({
   categoriasDespesas,
-  onRemover,
+  onRemoverDespesaCategoria,
   disabledOptionRemove,
+  onEditarDespesaCategoria
 }) => {
   const getDescReduzida = (descricao, tamanhoMax, tamnho) => {
     if (!!descricao && descricao.length > tamanhoMax) {
@@ -41,7 +42,7 @@ export const TableCategoriaDespesa = ({
           />
         </Tooltip>
       ),
-      width: 190,
+      width: 180,
       ellipsis: true,
     },
     {
@@ -54,7 +55,7 @@ export const TableCategoriaDespesa = ({
           <Input value={getDescReduzida(descricao, 25, 27)} disabled ellipsis />
         </Tooltip>
       ),
-      width: 280,
+      width: 240,
       ellipsis: true,
     },
     {
@@ -67,12 +68,20 @@ export const TableCategoriaDespesa = ({
     {
       title: "",
       key: "action",
-      render: (text, a, index) => (
+      render: (text, despesa, index) => (
         <span style={{ display: disabledOptionRemove ? "none" : "flex" }}>
           <Button
             shape="circle"
             type="dashed"
-            onClick={() => onRemover(index)}
+            onClick={() => onEditarDespesaCategoria(despesa, index)}
+            size="small"
+            icon={<EditOutlined />}
+          />
+          <Divider type="vertical" />
+          <Button
+            shape="circle"
+            type="dashed"
+            onClick={() => onRemoverDespesaCategoria(index)}
             size="small"
             icon={<MinusOutlined style={{ color: "red" }} />}
           />
@@ -84,7 +93,7 @@ export const TableCategoriaDespesa = ({
   return (
     <Row gutter={16}>
       <Col>
-        {!categoriasDespesas || categoriasDespesas.length == 0 ? null : (
+        {!categoriasDespesas || categoriasDespesas.length === 0 ? null : (
           <Table
             showHeader={false}
             rowKey={(categoriaDespesa) => categoriaDespesa.categoria.id}

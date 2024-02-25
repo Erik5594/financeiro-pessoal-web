@@ -49,19 +49,7 @@ export const TableDespesa = ({
     });
   };
 
-  const dataFormatada = (data, formatIn, formatOut) => {
-    return dayjs(data, formatIn).format(formatOut);
-  };
-
   const columns = [
-    {
-      title: "Lançamento",
-      dataIndex: "dataLancamento",
-      key: "dataLancamento",
-      render: (lancamento) => {
-        return <div>{lancamento}</div>;
-      },
-    },
     {
       title: "Descrição",
       dataIndex: "descricao",
@@ -113,7 +101,7 @@ export const TableDespesa = ({
             type="primary"
             title="Editar"
             size="small"
-            onClick={() => onEditar(despesa.id)}
+            onClick={() => {onEditar(despesa.id)}}
             icon={<EditOutlined />}
           />
           <Divider type="vertical" />

@@ -5,8 +5,6 @@ import store from '../store';
 import { AUTH_TOKEN } from 'constants/AuthConstant';
 import { notification } from 'antd';
 
-const unauthorizedCode = [401, 403]
-
 const service = axios.create({
   baseURL: API_BASE_URL,
   timeout: 60000
@@ -42,12 +40,16 @@ service.interceptors.response.use( (response) => {
 	}
 
 	// Remove token and redirect 
-	if (unauthorizedCode.includes(error.response.status)) {
+	if (error.response.status === 401) {
 		notificationParam.message = 'Falha na autenticação'
 		notificationParam.description = 'Tente novamente'
 		localStorage.removeItem(AUTH_TOKEN)
 
 		store.dispatch(signOutSuccess())
+	}
+
+	if (error.response.status === 403) {
+		notificationParam.message = 'Sem permissão.'
 	}
 
 	if (error.response.status === 400) {
@@ -59,7 +61,12 @@ service.interceptors.response.use( (response) => {
 	}
 
 	if (error.response.status === 500) {
-		notificationParam.message = 'Ocorreu um erro interno'
+		console.log('Erro interceptor', error.response)
+		if(error.response.data && error.response.data.mensagem){
+			notificationParam.message = error.response.data.mensagem
+		}else{
+			notificationParam.message = 'Ocorreu um erro interno'
+		}
 	}
 	
 	if (error.response.status === 508) {
