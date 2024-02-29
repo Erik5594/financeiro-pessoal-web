@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Alert } from "antd";
 import { signUp, showAuthMessage, showLoading, hideAuthMessage } from 'store/slices/authSlice';
 import { useNavigate } from 'react-router-dom'
@@ -17,10 +17,16 @@ const rules = {
 			message: 'Email inválido!'
 		}
 	],
+	nome: [
+		{ 
+			required: true,
+			message: 'Informe um nome!'
+		}
+	],
 	password: [
 		{ 
 			required: true,
-			message: 'Informe uma senha'
+			message: 'Informe uma senha!'
 		}
 	],
 	confirm: [
@@ -78,6 +84,14 @@ export const RegisterForm = (props) => {
 				<Alert type="error" showIcon message={message}></Alert>
 			</motion.div>
 			<Form form={form} layout="vertical" name="register-form" onFinish={onSignUp}>
+				<Form.Item 
+					name="nome" 
+					label="Nome" 
+					rules={rules.nome}
+					hasFeedback
+				>
+					<Input prefix={<UserOutlined className="text-primary" />}/>
+				</Form.Item>
 				<Form.Item 
 					name="email" 
 					label="Email" 

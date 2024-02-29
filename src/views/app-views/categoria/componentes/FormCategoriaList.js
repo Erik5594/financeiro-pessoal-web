@@ -5,7 +5,7 @@ import React from "react";
 const { Option } = Select;
 
 export const FormCategoriaList = (props) => {
-  const { categorias, onAddCategoria, form } = props;
+  const { categorias, onAddCategoria, valorParcela=true } = props;
 
   return (
     <Row gutter={16}>

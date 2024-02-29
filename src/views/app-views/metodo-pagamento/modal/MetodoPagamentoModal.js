@@ -80,11 +80,21 @@ export const MetodosPagamentoModal = (props) => {
   };
 
   useEffect(() => {
-    arrumarFieldsEdicao();
+    if (metodoPagamento?.id) {
+      arrumarFieldsEdicao();
+      if(metodoPagamento.tipoMetodoPagamento === 'CARTAO_CREDITO'){
+        buscarDataVencimento();
+      }
+    }
   }, []);
 
   useEffect(() => {
-    arrumarFieldsEdicao();
+    if (metodoPagamento?.id) {
+      arrumarFieldsEdicao();
+      if(metodoPagamento.tipoMetodoPagamento === 'CARTAO_CREDITO'){
+        buscarDataVencimento();
+      }
+    }
   }, [metodoPagamento]);
 
   const arrumarFieldsEdicao = () => {
@@ -97,11 +107,11 @@ export const MetodosPagamentoModal = (props) => {
       });
       fieldsEdicao.push({
         name: ["diaVencimento"],
-        value: metodoPagamento.diaVencimento,
+        value: metodoPagamento.diaVencimento ? metodoPagamento.diaVencimento : formDefault.diaVencimento,
       });
       fieldsEdicao.push({
         name: ["diasParaFechamento"],
-        value: metodoPagamento.diasParaFechamento,
+        value: metodoPagamento.diasParaFechamento ? metodoPagamento.diasParaFechamento : formDefault.diasParaFechamento,
       });
       fieldsEdicao.push({
         name: ["isCartaoCredito"],

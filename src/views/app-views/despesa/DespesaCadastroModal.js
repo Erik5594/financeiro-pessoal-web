@@ -72,19 +72,25 @@ export const DespesaCadastroModal = (props) => {
   const [isModalPreviaRecorrenteOpen, setIsModalPreviaRecorrenteOpen] =
     useState(false);
   const [tipoDespesa, setTipoDespesa] = useState(0);
+  const [isDividir, setIsDividir] = useState(false);
 
   const [isGerandoPrevias, setIsGerandoPrevias] = useState(false);
   const [previas, setPrevias] = useState([]);
-  const [tipoLancamento, setTipoLancamento] = useState("Antecipado");
+  const [tipoLancamento, setTipoLancamento] = useState("Antecipada");
 
   const gerarPrevias = async () => {
+
+    const diaLancamento = dayjs(form.getFieldValue("dataLancamento")).format(
+      "D"
+    );
+
     const filtro = {
       uuidFormaPagamento: form.getFieldValue("formaPagamento"),
       frequencia: form.getFieldValue("frenquencia"),
       dataLimite: dayjs(form.getFieldValue("dataLimiteFrequencia")).format(
         "DD/MM/YYYY"
       ),
-      primeiroLancamento: dayjs().format("DD/MM/YYYY"),
+      primeiroLancamento: dayjs().set('date', diaLancamento).format("DD/MM/YYYY"),
       primeiroVencimento: dayjs(form.getFieldValue("dataVencimento")).format(
         "DD/MM/YYYY"
       ),
@@ -145,6 +151,10 @@ export const DespesaCadastroModal = (props) => {
   useEffect(() => {
     arrumarFieldsEdicao();
   }, [despesa]);
+
+  useEffect(() => {
+    setarMetodoPagamentoDefault(listaMetodoPagamento);
+  }, [listaMetodoPagamento]);
 
   const onAddCategoria = () => {
     const categoriaDespesa = {
@@ -223,7 +233,6 @@ export const DespesaCadastroModal = (props) => {
         if (originalPromiseResult.payload !== "Error") {
           const metodosPagamentos = originalPromiseResult.content;
           setListaMetodoPagamento(metodosPagamentos);
-          setarMetodoPagamentoDefault(metodosPagamentos);
         }
       })
       .catch((rejectedValueOrSerializedError) =>
@@ -235,15 +244,17 @@ export const DespesaCadastroModal = (props) => {
   };
 
   function setarTipoLancamento(idMetodoPagamento) {
-    const metodoPagamento = listaMetodoPagamento.find(
-      (metodoPagamento) => metodoPagamento.id === idMetodoPagamento
-    );
-    const tipoLancamentoAux = listaTipoLancamentoCompetencia.find(
-      (tipoLancamentoCompetencia) =>
-        tipoLancamentoCompetencia.value ===
-        metodoPagamento.tipoLancamentoCompetencia
-    );
-    setTipoLancamento(tipoLancamentoAux.descricao);
+    if (listaMetodoPagamento.length > 0) {
+      const metodoPagamento = listaMetodoPagamento.find(
+        (metodoPagamento) => metodoPagamento.id === idMetodoPagamento
+      );
+      const tipoLancamentoAux = listaTipoLancamentoCompetencia.find(
+        (tipoLancamentoCompetencia) =>
+          tipoLancamentoCompetencia.value ===
+          metodoPagamento.tipoLancamentoCompetencia
+      );
+      setTipoLancamento(tipoLancamentoAux.descricao);
+    }
   }
 
   const arrumarFieldsEdicao = () => {
@@ -251,6 +262,7 @@ export const DespesaCadastroModal = (props) => {
     if (despesa?.id) {
       const parcelado = despesa.qtdeParcela > 0;
       let tipoDespesa = 0;
+
       setarTipoLancamento(despesa.idMetodoPagamento);
       if (parcelado) {
         tipoDespesa = 1;
@@ -453,14 +465,25 @@ export const DespesaCadastroModal = (props) => {
     const cartaoCredito = option.tipoMetodoPagamento === "CARTAO_CREDITO";
     setIsCartaoCredito(cartaoCredito);
     buscarDataDatas();
-    setarTipoLancamento(value)
+    setarTipoLancamento(value);
   };
 
   const getTitle = () => {
     const title = isEdicao ? "Editar despesa" : "Nova despesa";
     return (
       <Fragment>
-        <h2>{title}</h2>
+        <div style={{ display: "flex" }}>
+          <h2>{title}</h2>
+          <span
+            style={{
+              fontSize: "10px",
+              color: "blue",
+              fontStyle: "italic",
+            }}
+          >
+            **{tipoLancamento}
+          </span>
+        </div>
         <Divider />
       </Fragment>
     );
@@ -505,15 +528,6 @@ export const DespesaCadastroModal = (props) => {
                   </div>
                 )}
               />
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: "blue",
-                  fontStyle: "italic",
-                }}
-              >
-                **{tipoLancamento}
-              </span>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={5}>
@@ -713,20 +727,34 @@ export const DespesaCadastroModal = (props) => {
     });
   };
 
+  const calcularTotalAux = (categorias, multiplicador) => {
+    let total = 0;
+    for (let i = 0; i < categorias.length; i++) {
+      total = total + (categorias[i].valor/multiplicador);
+    }
+    total = total * multiplicador;
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
   const DescTotal = () => {
     let qtdeParcela = 2;
     let total = "R$ 0,00";
     let totalGeral = "R$ 0,00";
     if (isEdicao) {
       total = calcularTotal(despesa.categorias, 1);
-      qtdeParcela = form.getFieldValue("qtdeParcela");
-    } else {
-      total = calcularTotal(tableCategoriaDespesa, 1);
       qtdeParcela = despesa.qtdeParcela;
-    }
-    if (tipoDespesa === 1 || isParcelado) {
       totalGeral = calcularTotal(tableCategoriaDespesa, qtdeParcela);
+    } else {
+      total = calcularTotalAux(tableCategoriaDespesa, 1);
+      qtdeParcela = form.getFieldValue("qtdeParcela");
+      if (tipoDespesa === 1 || isParcelado) {
+        totalGeral = calcularTotalAux(tableCategoriaDespesa, qtdeParcela);
+      }
     }
+    
     return tipoDespesa === 1 || isParcelado ? (
       <div style={{ display: "flex", justifyContent: "start", width: "100%" }}>
         <strong>

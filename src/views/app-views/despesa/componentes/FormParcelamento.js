@@ -1,4 +1,4 @@
-import { Col, Divider, Form, Input, InputNumber, Row } from "antd";
+import { Checkbox, Col, Divider, Form, Input, InputNumber, Row } from "antd";
 import React, { Fragment, useEffect } from "react";
 
 export const FormParcelamento = ({
@@ -63,6 +63,11 @@ export const FormParcelamento = ({
         <Col xxl>
           <Form.Item label="Valor da parcela" name="infoParcelamento">
             <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col xxl>
+          <Form.Item label="Informei valor total" name="dividir">
+            <Checkbox disabled />
           </Form.Item>
         </Col>
       </Row>
