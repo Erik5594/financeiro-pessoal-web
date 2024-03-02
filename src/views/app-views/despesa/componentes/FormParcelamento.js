@@ -5,10 +5,13 @@ export const FormParcelamento = ({
   isEdicao,
   tableCategoriaDespesa,
   form,
+  onChangeSelectDividir,
+  setQtdeParcela,
+  isDividir,
 }) => {
   useEffect(() => {
     valorCadaParcelaFormatado();
-  }, [tableCategoriaDespesa]);
+  }, [tableCategoriaDespesa, isDividir]);
 
   const valorCadaParcelaFormatado = () => {
     let total = 0;
@@ -19,13 +22,14 @@ export const FormParcelamento = ({
       total += valores[i];
     }
     const qtdeParcela = form.getFieldValue("qtdeParcela");
-    const totalParcela = total / qtdeParcela;
+    const totalParcela = isDividir ? total / qtdeParcela : total;
     const totalParcelaFormatado = totalParcela.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
     const infoParcelamento = `${qtdeParcela}x de ${totalParcelaFormatado}`;
     form.setFieldValue("infoParcelamento", infoParcelamento);
+    setQtdeParcela(qtdeParcela);
     return infoParcelamento;
   };
 
@@ -44,10 +48,7 @@ export const FormParcelamento = ({
               min={2}
               max={24}
               disabled={isEdicao}
-              onChange={(event) => {
-                console.log("Alterou", event);
-                valorCadaParcelaFormatado();
-              }}
+              onChange={valorCadaParcelaFormatado}
             />
           </Form.Item>
         </Col>
@@ -66,8 +67,8 @@ export const FormParcelamento = ({
           </Form.Item>
         </Col>
         <Col xxl>
-          <Form.Item label="Informei valor total" name="dividir">
-            <Checkbox disabled />
+          <Form.Item label="Informei o valor total" name="dividir">
+            <Checkbox onChange={onChangeSelectDividir} />
           </Form.Item>
         </Col>
       </Row>

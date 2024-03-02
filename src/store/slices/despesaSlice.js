@@ -17,7 +17,7 @@ export const listar = createAsyncThunk(
       const response = await DespesaService.listar(data);
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -31,7 +31,7 @@ export const cadastrar = createAsyncThunk(
         : DespesaService.cadastrar(data));
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -43,7 +43,7 @@ export const excluir = createAsyncThunk(
       await DespesaService.excluir(data);
       return true;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -55,7 +55,7 @@ export const excluirVarios = createAsyncThunk(
       await DespesaService.excluirVarios(data);
       return true;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -67,7 +67,7 @@ export const buscarById = createAsyncThunk(
       const response = await DespesaService.buscarById({ id: data.id });
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -79,7 +79,7 @@ export const pagar = createAsyncThunk(
       const response = await DespesaService.pagar({ id: data.id });
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -91,7 +91,7 @@ export const pagarVarias = createAsyncThunk(
       await DespesaService.pagarVarias(data);
       return true;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );

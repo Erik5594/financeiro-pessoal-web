@@ -6,7 +6,8 @@ export const TableCategoriaDespesa = ({
   categoriasDespesas,
   onRemoverDespesaCategoria,
   disabledOptionRemove,
-  onEditarDespesaCategoria
+  onEditarDespesaCategoria,
+  isEdicao
 }) => {
   const getDescReduzida = (descricao, tamanhoMax, tamnho) => {
     if (!!descricao && descricao.length > tamanhoMax) {
@@ -95,7 +96,7 @@ export const TableCategoriaDespesa = ({
       <Col>
         {!categoriasDespesas || categoriasDespesas.length === 0 ? null : (
           <Table
-            showHeader={false}
+            showHeader={isEdicao}
             rowKey={(categoriaDespesa) => categoriaDespesa.categoria.id}
             columns={columns}
             dataSource={categoriasDespesas}

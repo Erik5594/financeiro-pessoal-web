@@ -26,6 +26,7 @@ export const FormDespesaCategoria = ({
         disabledOptionRemove={isEdicao && isParcelado}
         onRemoverDespesaCategoria={onRemoverDespesaCategoria}
         onEditarDespesaCategoria={onEditarDespesaCategoria}
+        isEdicao={isEdicao}
       />
     </Fragment>
   );

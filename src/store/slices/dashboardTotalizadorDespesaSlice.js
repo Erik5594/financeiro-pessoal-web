@@ -21,7 +21,7 @@ export const buscar = createAsyncThunk(
       const response = await DashboardService.totalizadorDespesa(competenciaFormatada);
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );

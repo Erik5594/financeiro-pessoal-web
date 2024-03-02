@@ -18,7 +18,7 @@ export const listar = createAsyncThunk(
       const response = await MetodoPagamentoService.listar({ size, page });
       return response;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -32,7 +32,7 @@ export const cadastrar = createAsyncThunk(
         : MetodoPagamentoService.cadastrar(data));
       return true;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );
@@ -44,7 +44,7 @@ export const excluir = createAsyncThunk(
       await MetodoPagamentoService.excluir(data);
       return data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
 );

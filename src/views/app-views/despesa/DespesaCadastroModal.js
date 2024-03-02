@@ -72,6 +72,7 @@ export const DespesaCadastroModal = (props) => {
   const [isModalPreviaRecorrenteOpen, setIsModalPreviaRecorrenteOpen] =
     useState(false);
   const [tipoDespesa, setTipoDespesa] = useState(0);
+  const [qtdeParcela, setQtdeParcela] = useState(2);
   const [isDividir, setIsDividir] = useState(false);
 
   const [isGerandoPrevias, setIsGerandoPrevias] = useState(false);
@@ -79,7 +80,6 @@ export const DespesaCadastroModal = (props) => {
   const [tipoLancamento, setTipoLancamento] = useState("Antecipada");
 
   const gerarPrevias = async () => {
-
     const diaLancamento = dayjs(form.getFieldValue("dataLancamento")).format(
       "D"
     );
@@ -90,7 +90,9 @@ export const DespesaCadastroModal = (props) => {
       dataLimite: dayjs(form.getFieldValue("dataLimiteFrequencia")).format(
         "DD/MM/YYYY"
       ),
-      primeiroLancamento: dayjs().set('date', diaLancamento).format("DD/MM/YYYY"),
+      primeiroLancamento: dayjs()
+        .set("date", diaLancamento)
+        .format("DD/MM/YYYY"),
       primeiroVencimento: dayjs(form.getFieldValue("dataVencimento")).format(
         "DD/MM/YYYY"
       ),
@@ -416,7 +418,7 @@ export const DespesaCadastroModal = (props) => {
       console.log("DESPESA PARCELADA");
       categoriasParcelada = categorias.map((categoriaDespesa) => ({
         ...categoriaDespesa,
-        valor: categoriaDespesa.valor / values.qtdeParcela,
+        valor: isDividir ? categoriaDespesa.valor / values.qtdeParcela : categoriaDespesa.valor,
       }));
     } else if (values.tipoDespesa === 2) {
       //recorrente
@@ -466,6 +468,10 @@ export const DespesaCadastroModal = (props) => {
     setIsCartaoCredito(cartaoCredito);
     buscarDataDatas();
     setarTipoLancamento(value);
+  };
+
+  const onChangeSelectDividir = (event) => {
+    setIsDividir(event.target.checked);
   };
 
   const getTitle = () => {
@@ -715,54 +721,64 @@ export const DespesaCadastroModal = (props) => {
     );
   };
 
-  const calcularTotal = (categorias, multiplicador) => {
+  const calcularTotalMutiplicado = (categorias, multiplicador) => {
+    let total = totalCategorias(categorias)
+    total = total * multiplicador;
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  const calcularTotalDividido = (categorias, dividor) => {
+    let total = totalCategorias(categorias)
+    total = total / dividor;
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  function totalCategorias (categorias) {
     let total = 0;
     for (let i = 0; i < categorias.length; i++) {
       total = total + categorias[i].valor;
     }
-    total = total * multiplicador;
-    return total.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
-
-  const calcularTotalAux = (categorias, multiplicador) => {
-    let total = 0;
-    for (let i = 0; i < categorias.length; i++) {
-      total = total + (categorias[i].valor/multiplicador);
-    }
-    total = total * multiplicador;
-    return total.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
+    return total;
+  }
 
   const DescTotal = () => {
-    let qtdeParcela = 2;
+    let qtdeParcelaAux = qtdeParcela;
     let total = "R$ 0,00";
     let totalGeral = "R$ 0,00";
     if (isEdicao) {
-      total = calcularTotal(despesa.categorias, 1);
-      qtdeParcela = despesa.qtdeParcela;
-      totalGeral = calcularTotal(tableCategoriaDespesa, qtdeParcela);
+      total = calcularTotalMutiplicado(despesa.categorias, 1);
+      qtdeParcelaAux = despesa.qtdeParcela;
+      totalGeral = calcularTotalMutiplicado(tableCategoriaDespesa, qtdeParcelaAux);
     } else {
-      total = calcularTotalAux(tableCategoriaDespesa, 1);
-      qtdeParcela = form.getFieldValue("qtdeParcela");
+      qtdeParcelaAux = form.getFieldValue("qtdeParcela");
+      if(isDividir && tipoDespesa === 1){
+        total = calcularTotalDividido(tableCategoriaDespesa, qtdeParcelaAux);
+      }else{
+        total = calcularTotalDividido(tableCategoriaDespesa, 1);
+      }
       if (tipoDespesa === 1 || isParcelado) {
-        totalGeral = calcularTotalAux(tableCategoriaDespesa, qtdeParcela);
+        if(isDividir && tipoDespesa === 1){
+          totalGeral = calcularTotalDividido(tableCategoriaDespesa, 1);
+        }else{
+          totalGeral = calcularTotalMutiplicado(tableCategoriaDespesa, qtdeParcelaAux);
+        }
       }
     }
-    
+
     return tipoDespesa === 1 || isParcelado ? (
       <div style={{ display: "flex", justifyContent: "start", width: "100%" }}>
         <strong>
-          Total: {qtdeParcela}x {total}
+          Total: {qtdeParcelaAux}x {total}
         </strong>
         <span
           style={{ color: "#939393", fontStyle: "italic" }}
-        >{`-> (${totalGeral})`}</span>
+        >{`-> Total geral (${totalGeral})`}</span>
       </div>
     ) : (
       <div style={{ display: "flex", justifyContent: "start", width: "100%" }}>
@@ -817,6 +833,9 @@ export const DespesaCadastroModal = (props) => {
             isEdicao={isEdicao}
             tableCategoriaDespesa={tableCategoriaDespesa}
             form={form}
+            onChangeSelectDividir={onChangeSelectDividir}
+            isDividir={isDividir}
+            setQtdeParcela={setQtdeParcela}
           />
         ) : null}
         <DescTotal />

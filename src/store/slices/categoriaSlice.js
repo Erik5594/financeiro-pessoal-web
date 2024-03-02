@@ -15,7 +15,7 @@ export const buscarTodas = createAsyncThunk('categoria/buscarTodas',async (data,
 		const response = await CategoriaService.buscarTodas()
         return response
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 
@@ -24,7 +24,7 @@ export const buscarById = createAsyncThunk('categoria/buscarById',async (data, {
 		const response = await CategoriaService.buscarById({id: data.id})
         return response
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 
@@ -33,7 +33,7 @@ export const cadastrar = createAsyncThunk('categoria/cadastrar',async (data, { r
 		await CategoriaService.cadastrar(data)
         return true
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 
@@ -42,7 +42,7 @@ export const editar = createAsyncThunk('categoria/editar',async (data, { rejectW
 		await CategoriaService.editar(data)
         return true
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 
@@ -51,7 +51,7 @@ export const excluir = createAsyncThunk('categoria/excluir',async (data, { rejec
 		await CategoriaService.excluir(data)
         return true
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 
@@ -60,7 +60,7 @@ export const buscarTree = createAsyncThunk('categoria/buscarTree',async (data, {
 		const response = await CategoriaService.buscarTree()
         return response
 	} catch (err) {
-		return rejectWithValue(err.response?.data?.message || 'Error')
+		return rejectWithValue(err.response?.data?.mensagem || 'Error')
 	}
 })
 

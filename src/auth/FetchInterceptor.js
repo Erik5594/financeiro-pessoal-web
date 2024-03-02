@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_BASE_URL } from 'configs/AppConfig';
 import { signOutSuccess } from 'store/slices/authSlice';
 import store from '../store';
-import { AUTH_TOKEN } from 'constants/AuthConstant';
+import { AUTH_TOKEN, TENANT_ID } from 'constants/AuthConstant';
 import { notification } from 'antd';
 
 const service = axios.create({
@@ -16,9 +16,14 @@ const TOKEN_PAYLOAD_KEY = 'authorization'
 // API Request interceptor
 service.interceptors.request.use(config => {
 	const jwtToken = localStorage.getItem(AUTH_TOKEN) || null;
+	const tenantId = localStorage.getItem(TENANT_ID) || null;
 	
 	if (jwtToken) {
 		config.headers[TOKEN_PAYLOAD_KEY] = 'Bearer ' + jwtToken
+	}
+
+	if(tenantId){
+		config.headers[TENANT_ID] = tenantId
 	}
 
   	return config
@@ -49,7 +54,8 @@ service.interceptors.response.use( (response) => {
 	}
 
 	if (error.response.status === 403) {
-		notificationParam.message = 'Sem permissão.'
+		console.log('Erro 403', error.response)
+		notificationParam.message = error.response?.data?.mensagem || 'Sem permissão.'
 	}
 
 	if (error.response.status === 400) {

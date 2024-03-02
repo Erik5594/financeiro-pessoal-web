@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import SideNav from 'components/layout-components/SideNav';
@@ -65,6 +65,10 @@ export const AppLayout = ({ navCollapsed, navType, direction, children }) => {
         }
         return {paddingLeft: getLayoutGutter()}
     }
+
+    useEffect(() => {
+        console.log('Buscando dados do perfil...')
+    }, [])
 
     return (
         <Layout>

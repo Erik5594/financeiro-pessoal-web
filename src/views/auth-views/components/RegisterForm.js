@@ -23,6 +23,12 @@ const rules = {
 			message: 'Informe um nome!'
 		}
 	],
+	username: [
+		{ 
+			required: true,
+			message: 'Informe um username!'
+		}
+	],
 	password: [
 		{ 
 			required: true,
@@ -86,8 +92,16 @@ export const RegisterForm = (props) => {
 			<Form form={form} layout="vertical" name="register-form" onFinish={onSignUp}>
 				<Form.Item 
 					name="nome" 
-					label="Nome" 
+					label="Primeiro Nome" 
 					rules={rules.nome}
+					hasFeedback
+				>
+					<Input prefix={<UserOutlined className="text-primary" />}/>
+				</Form.Item>
+				<Form.Item 
+					name="username" 
+					label="Username" 
+					rules={rules.username}
 					hasFeedback
 				>
 					<Input prefix={<UserOutlined className="text-primary" />}/>
