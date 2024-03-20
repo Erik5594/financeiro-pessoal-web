@@ -18,6 +18,14 @@ AuthService.register = function (data) {
 	})
 }
 
+AuthService.atualizarSenha = function (data) {
+	return fetch({
+		url: '/v1/auth/atualizar-senha',
+		method: 'put',
+		data: data
+	})
+}
+
 AuthService.logout = function () {
 	return fetch({
 		url: '/auth/logout',

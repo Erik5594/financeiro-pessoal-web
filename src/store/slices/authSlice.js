@@ -3,6 +3,7 @@ import { AUTH_TOKEN, TENANT_ID } from "constants/AuthConstant";
 import FirebaseService from "services/FirebaseService";
 import AuthService from "services/AuthService";
 import jwtDecode from "jwt-decode";
+import { message } from "antd";
 
 export const initialState = {
   loading: false,
@@ -39,6 +40,8 @@ export const signIn = createAsyncThunk(
 export const signUp = createAsyncThunk(
   "auth/register",
   async (data, { rejectWithValue }) => {
+    const key = "registrando";
+    message.loading({ content: "Cadastrando...", key, duration: 1000 });
     try {
       const response = await AuthService.register({
         ...data,
@@ -47,9 +50,31 @@ export const signUp = createAsyncThunk(
       const token = response.jwttoken;
       localStorage.setItem(AUTH_TOKEN, token);
 	    guardarTenantId(token);
+      message.success({ content: "Pronto!", key, duration: 1.5 });
       return token;
     } catch (err) {
       console.log('Erro ao registrar:', err.response)
+      message.error({ content: "Falhou!", key, duration: 1.5 });
+      return rejectWithValue(err.response?.data?.mensagem || "Error");
+    }
+  }
+);
+
+export const atualizarSenha = createAsyncThunk(
+  "auth/atualizarSenha",
+  async (data, { rejectWithValue }) => {
+    const key = "atualizandoSenha";
+    message.loading({ content: "Atualizando senha...", key, duration: 1000 });
+    try {
+      const response = await AuthService.atualizarSenha(data);
+      const token = response.jwttoken;
+      localStorage.setItem(AUTH_TOKEN, token);
+	    guardarTenantId(token);
+      message.success({ content: "Pronto!", key, duration: 1.5 });
+      return token;
+    } catch (err) {
+      console.log('Erro ao registrar:', err.response)
+      message.error({ content: "Falhou!", key, duration: 1.5 });
       return rejectWithValue(err.response?.data?.mensagem || "Error");
     }
   }
@@ -183,6 +208,19 @@ export const authSlice = createSlice({
         state.token = action.payload;
       })
       .addCase(signInWithFacebook.rejected, (state, action) => {
+        state.message = action.payload;
+        state.showMessage = true;
+        state.loading = false;
+      })
+      .addCase(atualizarSenha.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(atualizarSenha.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = "Senha alterada com sucesso!";
+        state.showMessage = true;
+      })
+      .addCase(atualizarSenha.rejected, (state, action) => {
         state.message = action.payload;
         state.showMessage = true;
         state.loading = false;

@@ -5,6 +5,7 @@ import metodosPagamentoReducer from './slices/metodoPagamentoSlice'
 import categoriaReducer from './slices/categoriaSlice'
 import despesaReducer from './slices/despesaSlice'
 import totalizadorDespesaReducer from './slices/dashboardTotalizadorDespesaSlice'
+import perfilReducer from './slices/perfilSlice'
 
 const rootReducer = (asyncReducers) => (state, action) => {
     const combinedReducer = combineReducers({
@@ -14,6 +15,7 @@ const rootReducer = (asyncReducers) => (state, action) => {
         categoriaReducer,
         despesaReducer,
         totalizadorDespesaReducer,
+        perfilReducer,
         ...asyncReducers,
     })
     return combinedReducer(state, action)

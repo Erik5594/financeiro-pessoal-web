@@ -21,7 +21,7 @@ import utils from 'utils'
 
 export const HeaderNav = props => {
 
-	const { isMobile } = props;
+	const { isMobile, perfil } = props;
 
 	const [searchActive, setSearchActive] = useState(false);
 
@@ -93,7 +93,7 @@ export const HeaderNav = props => {
 						</NavItem>
 					</NavEdge>
 					<NavEdge right>
-						<NavProfile mode={navMode} />
+						<NavProfile mode={navMode} perfil={perfil} />
 					</NavEdge>
 				</Nav>
 			</HeaderWrapper>

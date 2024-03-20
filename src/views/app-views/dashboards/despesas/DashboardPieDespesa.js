@@ -7,17 +7,20 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { notification } from "antd";
+import { Empty, notification } from "antd";
 
 export const DashboardPieDespesa = (props) => {
   const { buscar, totalizador, loading, content } = props;
   const [valores, setValores] = useState([]);
+  const [zerado, setZerado] = useState(true);
 
   const fetchTotalizador = (competencia) => {
     buscar(competencia)
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
           const retorno = originalPromiseResult.payload;
+          const zeradoAux = retorno.qtdePago === 0 && retorno.qtdeEmAberto === 0 && retorno.qtdeVencido === 0;
+          setZerado(zeradoAux)
           setarValores(retorno);
         }
       })
@@ -119,8 +122,8 @@ export const DashboardPieDespesa = (props) => {
 
   return (
     <CardDashboard title={"Despesa"} subtitle={"Quantidade x Situação"}>
-      <Chart options={options} series={valores} type="pie" />
-    </CardDashboard>
+        {zerado ? <Empty /> : <Chart options={options} series={valores} type="pie" />}
+      </CardDashboard>
   );
 };
 

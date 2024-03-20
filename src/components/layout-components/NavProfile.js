@@ -5,6 +5,7 @@ import {
   GoldOutlined,
   LogoutOutlined,
   DollarOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import NavItem from "./NavItem";
 import Flex from "components/shared-components/Flex";
@@ -17,6 +18,7 @@ import {
   FONT_SIZES,
 } from "constants/ThemeConstant";
 import MetodoPagamento from "views/app-views/metodo-pagamento/MetodosPagamento";
+import { Link } from "react-router-dom";
 
 const Icon = styled.div(() => ({
   fontSize: FONT_SIZES.LG,
@@ -104,10 +106,12 @@ const MenuItemMetodosPagamento = (props) => {
 };
 
 const MenuItem = (props) => (
-  <Flex as="a" href={props.path} alignItems="center" gap={SPACER[2]}>
-    <Icon>{props.icon}</Icon>
-    <span>{props.label}</span>
-  </Flex>
+  <Link to={props.path} relative="path">
+    <Flex alignItems="center" gap={SPACER[2]}>
+      <Icon>{props.icon}</Icon>
+      <span>{props.label}</span>
+    </Flex>
+  </Link>
 );
 
 const MenuItemSignOut = (props) => {
@@ -150,20 +154,30 @@ const items = [
     ),
   },
   {
+    key: "Perfil",
+    label: (
+      <MenuItem
+        path="/app/config/editar-perfil"
+        label="Perfil"
+        icon={<UserOutlined />}
+      />
+    ),
+  },
+  {
     key: "Sair",
     label: <MenuItemSignOut label="Sair" />,
   },
 ];
 
-export const NavProfile = ({ mode }) => {
+export const NavProfile = ({ mode, perfil }) => {
   return (
     <Dropdown placement="bottomRight" menu={{ items }} trigger={["click"]}>
       <NavItem mode={mode}>
         <Profile>
-          <Avatar src="https://as2.ftcdn.net/v2/jpg/05/34/51/79/1000_F_534517941_p4ow2RcqXpcLsh3RBftkD4RcBO8N5rEs.webp" />
+          <Avatar size={50} src={perfil?.urlImagemPerfil}>{`${perfil?.nome?.substr(0,1)}${perfil?.sobrenome?.substr(0,1) || ''}`}</Avatar>
           <UserInfo className="profile-text">
-            <Name>Erik Queiroz</Name>
-            <Title>Desenvolvedor Fullstack</Title>
+            <Name>{`${perfil.nome}`}</Name>
+            <Title>{`${perfil?.descricao || perfil?.sobrenome || ''}`}</Title>
           </UserInfo>
         </Profile>
       </NavItem>
