@@ -56,7 +56,7 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(false);
     const values = tipo === "receita" ? state.receita : state.despesa;
-    console.log('Values Cadastro', values);
+    console.log("Values Cadastro", values);
     setFields([
       { name: ["nome"], value: "" },
       { name: ["descricao"], value: "" },
@@ -69,7 +69,7 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(true);
     const values = tipo === "receita" ? state.receita : state.despesa;
-    console.log('Values Edição', values);
+    console.log("Values Edição", values);
     buscarById({ id: values.idCategoriaPai })
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
@@ -190,7 +190,7 @@ export const Categoria = (props) => {
   };
 
   const onSelect = (tipo, categoriaSelecionada) => {
-    console.log('Selecionado', categoriaSelecionada)
+    console.log("Selecionado", categoriaSelecionada);
     let nomeCaminho = "";
     let nomeCaminhoParent = "";
     let idCategoriaSelecionada = "";
@@ -198,7 +198,10 @@ export const Categoria = (props) => {
     if (categoriaSelecionada && categoriaSelecionada.length !== 0) {
       idCategoriaSelecionada = categoriaSelecionada[0];
       nomeCaminho = getNomeCaminhoCategoria(categoriaSelecionada[0], tipo);
-      nomeCaminhoParent = getNomeCaminhoCategoriaParent(categoriaSelecionada[0], tipo);
+      nomeCaminhoParent = getNomeCaminhoCategoriaParent(
+        categoriaSelecionada[0],
+        tipo
+      );
     }
     if (tipo === "receita") {
       setState({
@@ -226,7 +229,7 @@ export const Categoria = (props) => {
   };
 
   const getNomeCaminhoCategoria = (idCategoriaSelecionada, tipo) => {
-    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo)
+    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo);
 
     let nomeCompleto = "";
     for (let i = nomeCategorias.length - 1; i >= 0; i--) {
@@ -239,7 +242,7 @@ export const Categoria = (props) => {
   };
 
   const getNomeCaminhoCategoriaParent = (idCategoriaSelecionada, tipo) => {
-    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo)
+    const nomeCategorias = getNomesCategorias(idCategoriaSelecionada, tipo);
 
     let nomeCompleto = "";
     for (let i = nomeCategorias.length - 1; i >= 1; i--) {
@@ -365,8 +368,8 @@ export const Categoria = (props) => {
   return (
     <div>
       <div style={titulo}>Categorias</div>
-      <Collapse accordion defaultActiveKey={["1"]}>
-        <Panel header="Receitas" key="1" extra={acoesPanel("receita")}>
+      <Collapse accordion defaultActiveKey={["2"]}>
+        {/**<Panel header="Receitas" key="1" extra={acoesPanel("receita")}>
           <TreeCategoria
             autoFocus={!isModalOpen}
             treeData={categoriaTree.receitas}
@@ -374,7 +377,7 @@ export const Categoria = (props) => {
             abrirModalCadastro={abrirModalCadastro}
             onSelectUp={onSelect}
           />
-        </Panel>
+  </Panel>**/}
         <Panel header="Despesas" key="2" extra={acoesPanel("despesa")}>
           <TreeCategoria
             autoFocus={!isModalOpen}

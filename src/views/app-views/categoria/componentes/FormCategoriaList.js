@@ -48,10 +48,10 @@ export const FormCategoriaList = (props) => {
           label="Descrição"
           rules={[{ required: false }]}
         >
-          <Input placeholder="Descrição" />
+          <Input placeholder="Algo que justifique estar nessa categoria." />
         </Form.Item>
       </Col>
-      <Col xs={24} sm={24} md={5}>
+      <Col xs={18} sm={18} md={5}>
         <Form.Item
           validateTrigger={["onChange", "onBlur"]}
           name="valorCategoria"
@@ -68,7 +68,7 @@ export const FormCategoriaList = (props) => {
           />
         </Form.Item>
       </Col>
-      <Col xs={24} sm={24} md={2}>
+      <Col xs={6} sm={6} md={2}>
         <Form.Item label=" ">
           <Button
             shape="circle"

@@ -6,6 +6,7 @@ import {
   CheckOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
+import '../metodo-pagamento.css'
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -98,7 +99,7 @@ export const MetodoPagamentoList = (props) => {
   };
 
   return (
-    <div style={infiniteScroll}>
+    <div class="infinite-scroll">
       <InfiniteScroll
         initialLoad={false}
         pageStart={0}

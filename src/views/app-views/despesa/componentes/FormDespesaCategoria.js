@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import FormCategoriaList from "views/app-views/categoria/componentes/FormCategoriaList";
 import TableCategoriaDespesa from "./TableCategoriaDespesa";
+import { Divider } from "antd";
 
 export const FormDespesaCategoria = ({
   isEdicao,
@@ -14,6 +15,7 @@ export const FormDespesaCategoria = ({
 }) => {
   return (
     <Fragment>
+      <Divider orientation="left">Categorias</Divider>
       <div style={{ display: isEdicao && isParcelado ? "none" : "flex" }}>
         <FormCategoriaList
           categorias={categorias}

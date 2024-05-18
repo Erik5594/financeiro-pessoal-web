@@ -271,128 +271,131 @@ export const Despesa = (props) => {
             alignItems="center"
             className="py-4"
           >
-            <div style={{ display: "inline-flex" }}>
-              <h2>Despesas</h2>
-              <Tooltip title="Filtrar">
-                <Button
-                  type="link"
-                  className="ml-2"
-                  size="small"
-                  onClick={() => onClickButtonFiltro()}
-                >
-                  <SearchOutlined />
-                  <span>{`Filtrar (${countFiltroUtilizado})`}</span>
-                </Button>
-              </Tooltip>
-            </div>
-            <div>
-              <Tooltip title="Cadastrar nova despesa">
-                <Button
-                  type="primary"
-                  shape="circle"
-                  className="ml-2"
-                  size="small"
-                  onClick={() => onNova()}
-                  icon={<PlusOutlined />}
-                ></Button>
-              </Tooltip>
-              <Divider type="vertical" />
-              <Tooltip
-                title="Marcar todas despesas selecionadas como 'Pagas'."
-                placement="topLeft"
-              >
-                <Popconfirm
-                  placement="bottom"
-                  title={
-                    <span>
-                      <strong>
-                        MARCAR {`(${despesasSelecionadas.length})`} DESPESAS
-                        COMO PAGA:
-                      </strong>
-                      <br />
-                      <br />
-                      Todas as despesas selecionadas serão marcadas como
-                      'Pagas'.
-                      <br />
-                      <br /> Deseja continuar?
-                    </span>
-                  }
-                  okText="Sim"
-                  cancelText="Não"
-                  onConfirm={(event) => {
-                    event.stopPropagation();
-                    onPagarSelecionadas();
-                  }}
-                  onCancel={(event) => {
-                    event.stopPropagation();
-                  }}
-                >
+            <div style={{ display: "block", width: "100%" }}>
+              <div style={{ display: "flex" }}>
+                <h2>Despesas</h2>
+                <Tooltip title="Filtrar">
                   <Button
-                    title="Pagar"
+                    type="link"
+                    className="ml-2"
                     size="small"
-                    shape="circle"
-                    disabled={despesasSelecionadas.length < 1}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                    }}
-                    icon={<UploadOutlined />}
-                  />
-                </Popconfirm>
-              </Tooltip>
-              <Divider type="vertical" />
-              <Tooltip
-                title="Excluir todas despesas selecionadas."
-                placement="topLeft"
+                    onClick={() => onClickButtonFiltro()}
+                  >
+                    <SearchOutlined />
+                    <span>{`Filtrar (${countFiltroUtilizado})`}</span>
+                  </Button>
+                </Tooltip>
+              </div>
+              <div>
+                <TituloFiltro />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "end",
+                  marginTop: '10px'
+                }}
               >
-                <Popconfirm
-                  placement="bottom"
-                  title={
-                    <span>
-                      <strong>
-                        EXCLUIR {`(${despesasSelecionadas.length})`} DESPESAS
-                        SELECIONADAS:
-                      </strong>
-                      <br />
-                      <br />
-                      Todas despesas selecionadas serão excluídas, EXCETO as
-                      despesas com parcelamento.
-                      <br />
-                      <br /> Deseja continuar?
-                    </span>
-                  }
-                  okText="Sim"
-                  cancelText="Não"
-                  onConfirm={(event) => {
-                    event.stopPropagation();
-                    onExcluirSelecionadas();
-                  }}
-                  onCancel={(event) => {
-                    event.stopPropagation();
-                  }}
-                >
+                <Tooltip title="Cadastrar nova despesa">
                   <Button
-                    disabled={despesasSelecionadas.length < 1}
-                    shape="circle"
                     type="primary"
-                    danger
-                    title="Excluir"
+                    shape="circle"
+                    className="ml-2"
                     size="small"
-                    onClick={(event) => {
+                    onClick={() => onNova()}
+                    icon={<PlusOutlined />}
+                  ></Button>
+                </Tooltip>
+                <Divider type="vertical" />
+                <Tooltip
+                  title="Marcar todas despesas selecionadas como 'Pagas'."
+                  placement="topLeft"
+                >
+                  <Popconfirm
+                    placement="bottom"
+                    title={
+                      <span>
+                        <strong>
+                          MARCAR {`(${despesasSelecionadas.length})`} DESPESAS
+                          COMO PAGA:
+                        </strong>
+                        <br />
+                        <br />
+                        Todas as despesas selecionadas serão marcadas como
+                        'Pagas'.
+                        <br />
+                        <br /> Deseja continuar?
+                      </span>
+                    }
+                    okText="Sim"
+                    cancelText="Não"
+                    onConfirm={(event) => {
+                      event.stopPropagation();
+                      onPagarSelecionadas();
+                    }}
+                    onCancel={(event) => {
                       event.stopPropagation();
                     }}
-                    icon={<DeleteOutlined />}
-                  />
-                </Popconfirm>
-              </Tooltip>
-            </div>
-          </Flex>
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            className="py-4"
-          >
-            <div>
-              <TituloFiltro />
+                  >
+                    <Button
+                      title="Pagar"
+                      size="small"
+                      shape="circle"
+                      disabled={despesasSelecionadas.length < 1}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      icon={<UploadOutlined />}
+                    />
+                  </Popconfirm>
+                </Tooltip>
+                <Divider type="vertical" />
+                <Tooltip
+                  title="Excluir todas despesas selecionadas."
+                  placement="topLeft"
+                >
+                  <Popconfirm
+                    placement="bottom"
+                    title={
+                      <span>
+                        <strong>
+                          EXCLUIR {`(${despesasSelecionadas.length})`} DESPESAS
+                          SELECIONADAS:
+                        </strong>
+                        <br />
+                        <br />
+                        Todas despesas selecionadas serão excluídas, EXCETO as
+                        despesas com parcelamento.
+                        <br />
+                        <br /> Deseja continuar?
+                      </span>
+                    }
+                    okText="Sim"
+                    cancelText="Não"
+                    onConfirm={(event) => {
+                      event.stopPropagation();
+                      onExcluirSelecionadas();
+                    }}
+                    onCancel={(event) => {
+                      event.stopPropagation();
+                    }}
+                  >
+                    <Button
+                      disabled={despesasSelecionadas.length < 1}
+                      shape="circle"
+                      type="primary"
+                      danger
+                      title="Excluir"
+                      size="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      icon={<DeleteOutlined />}
+                    />
+                  </Popconfirm>
+                </Tooltip>
+              </div>
             </div>
           </Flex>
         </div>

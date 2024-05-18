@@ -1,0 +1,24 @@
+@media(max-width: 576px){
+    .ocultar-para-sm {
+        display: none;
+    }
+    .menor-para-sm {
+        width: 1;
+    }
+}
+@media(width > 576px){
+    .ocultar-para-maior-sm {
+        display: none;
+    }
+}
+.vencida {
+    background-color: #ffe1eb;
+}
+
+.vence-hoje {
+    background-color: #FFFFF0;
+}
+
+.pago {
+    background-color: #ebfff5;
+}

@@ -194,7 +194,7 @@ export const MetodosPagamentoModal = (props) => {
         onFinish={(values) => onCadastrarAction(values)}
       >
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={10}>
+          <Col xs={18} sm={18} md={18}>
             <Form.Item
               name="nome"
               label="Nome:"
@@ -203,23 +203,13 @@ export const MetodosPagamentoModal = (props) => {
               <Input />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={10}>
+          <Col xs={24} sm={24} md={24}>
             <Form.Item
               name="descricao"
               label="Descrição:"
               rules={[{ required: false }]}
             >
               <Input />
-            </Form.Item>
-          </Col>
-          <Col>
-            <Form.Item
-              name="padrao"
-              label="Padrão?"
-              valuePropName="checked"
-              rules={[{ required: false }]}
-            >
-              <Checkbox />
             </Form.Item>
           </Col>
         </Row>
@@ -237,6 +227,7 @@ export const MetodosPagamentoModal = (props) => {
                   atualizarDatas();
                 }}
                 buttonStyle="solid"
+                size="small"
               >
                 <Tooltip
                   color="black"
@@ -261,10 +252,9 @@ export const MetodosPagamentoModal = (props) => {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col xxl>
+          <Col xs={12} sm={12} md={12}>
             <Form.Item
               name="isCartaoCredito"
-              label="Cartão de crédito?"
               valuePropName="checked"
               rules={[{ required: false }]}
             >
@@ -276,11 +266,20 @@ export const MetodosPagamentoModal = (props) => {
                   }
                 }}
                 value={isCartaoCredito}
-              />
+              >Cartão de crédito</Checkbox>
             </Form.Item>
           </Col>
-          <div style={{ display: isCartaoCredito ? "flex" : "none" }}>
-            <Col xxl>
+          <Col xs={12} sm={12} md={12}>
+            <Form.Item
+              name="padrao"
+              valuePropName="checked"
+              rules={[{ required: false }]}
+            >
+              <Checkbox>Padrão</Checkbox>
+            </Form.Item>
+          </Col>
+          <div style={{ display: isCartaoCredito ? "flex" : "none", width: '100%' }}>
+            <Col  xs={12} sm={12} md={12}>
               <Form.Item
                 layout="vertical"
                 name="diaVencimento"
@@ -295,7 +294,7 @@ export const MetodosPagamentoModal = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col xxl>
+            <Col xs={12} sm={12} md={12}>
               <Form.Item
                 name="diasParaFechamento"
                 label="Dias para fechamento:"

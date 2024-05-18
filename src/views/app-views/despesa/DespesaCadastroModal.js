@@ -506,7 +506,7 @@ export const DespesaCadastroModal = (props) => {
     return (
       <Fragment>
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={5}>
+          <Col xs={12} sm={12} md={5}>
             <Form.Item
               name="mesCompetencia"
               label="Competência"
@@ -536,7 +536,7 @@ export const DespesaCadastroModal = (props) => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={5}>
+          <Col xs={12} sm={12} md={5}>
             <Form.Item
               name="dataLancamento"
               label="Lançamento"
@@ -616,7 +616,7 @@ export const DespesaCadastroModal = (props) => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={6}>
+          <Col xs={12} sm={12} md={6}>
             <Form.Item
               name="dataVencimento"
               label="Vencimento"
@@ -631,7 +631,7 @@ export const DespesaCadastroModal = (props) => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={24} md={7}>
+          <Col xs={12} sm={12} md={7}>
             <Form.Item
               name="situacao"
               label="Situação"
@@ -671,7 +671,7 @@ export const DespesaCadastroModal = (props) => {
               rules={[{ required: true }]}
             >
               <Input
-                placeholder="Descrição"
+                placeholder="Algo que ajude a identificar no extrato."
                 disabled={isEdicao && isParcelado}
               />
             </Form.Item>
@@ -682,7 +682,7 @@ export const DespesaCadastroModal = (props) => {
               label="Observação"
               rules={[{ required: false }]}
             >
-              <Input placeholder="Observação" />
+              <Input placeholder="Algo que ajude a lembrar a finalidade." />
             </Form.Item>
           </Col>
         </Row>

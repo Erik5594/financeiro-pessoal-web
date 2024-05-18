@@ -1,11 +1,20 @@
-import { Button, Divider, Popconfirm, Table, Tag } from "antd";
+import { Button, Divider, Dropdown, Popconfirm, Table, Tag } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
+  MoreOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import React from "react";
+import "../despesa.css";
+import React, { useState } from "react";
+import styled from "@emotion/styled";
+import { FONT_SIZES, SPACER } from "constants/ThemeConstant";
+import Flex from "components/shared-components/Flex";
+
+const Icon = styled.div(() => ({
+  fontSize: FONT_SIZES.LG,
+}));
 
 export const TableDespesa = ({
   despesas,
@@ -17,6 +26,8 @@ export const TableDespesa = ({
   onChangePage,
   onChangeDespesasSelecionadas,
 }) => {
+  const [despesaSelecionada, setDespesaSelecionada] = useState({});
+
   const rowSelectionConfig = {
     onChange: (idsDespesas, despesas) => {
       onChangeDespesasSelecionadas(despesas);
@@ -38,6 +49,122 @@ export const TableDespesa = ({
     }
   };
 
+  const DeletarRegistro = (props) => (
+    <Popconfirm
+      placement="bottom"
+      title={
+        props.despesa.qtdeParcela > 0 ? (
+          <span>
+            <strong>DESPESA PARCELADA:</strong>
+            <br />
+            <br />
+            Será removido todas parcelas, inclusive já PAGAS e competências
+            anteriores.
+            <br /> Sendo assim poderá influenciar em competências anteriores.
+            <br />
+            <br /> Deseja continuar?
+          </span>
+        ) : (
+          "Tem certeza que deseja excluir essa despesa?"
+        )
+      }
+      okText="Sim"
+      cancelText="Não"
+      onConfirm={(event) => {
+        event.stopPropagation();
+        onExcluir(props.despesa.id);
+      }}
+      onCancel={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <Button
+        shape={props.shape}
+        type="primary"
+        style={props.style}
+        danger
+        title="Excluir"
+        size="small"
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+        icon={<DeleteOutlined />}
+      >
+        {props.label}
+      </Button>
+    </Popconfirm>
+  );
+
+  const MarcarComoPagoButton = (props) => (
+    <Popconfirm
+      placement="bottom"
+      title="Tem certeza que deseja marcar como pago essa despesa?"
+      okText="Sim"
+      cancelText="Não"
+      onConfirm={(event) => {
+        event.stopPropagation();
+        onPagar(props.despesaId);
+      }}
+      onCancel={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <Button
+        shape={props.shape}
+        title="Marcar como pago"
+        size="small"
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+        icon={<UploadOutlined />}
+      >
+        {props.label}
+      </Button>
+    </Popconfirm>
+  );
+
+  const MenuItem = (props) => (
+    <Flex alignItems="center" gap={SPACER[2]} onClick={props.action}>
+      <Icon>{props.icon}</Icon>
+      <span>{props.label}</span>
+    </Flex>
+  );
+
+  const editando = () => {
+    onEditar(despesaSelecionada.id);
+  };
+
+  const items = [
+    {
+      key: "editar",
+      label: (
+        <Button
+          title="Editar"
+          size="small"
+          onClick={editando}
+          icon={<EditOutlined />}
+          style={{width: '100%'}} 
+        >
+          Editar
+        </Button>
+      ),
+    },
+    {
+      key: "marcar-como-pago",
+      label: (
+        <MarcarComoPagoButton
+          despesaId={despesaSelecionada.id}
+          label="Marcar como pago"
+          style={{width: '100%'}} 
+        />
+      ),
+    },
+    {
+      key: "excluir",
+      label: <DeletarRegistro label="Excluir" despesa={despesaSelecionada} style={{width: '100%'}} />,
+    },
+  ];
+
   const getTotal = (categorias) => {
     let total = 0;
     for (let i = 0; i < categorias.length; i++) {
@@ -47,6 +174,25 @@ export const TableDespesa = ({
       style: "currency",
       currency: "BRL",
     });
+  };
+
+  const rowsClassName = (despesa, index) => {
+    if (despesa.situacao === "VENCIDA") {
+      return "vencida";
+    }
+    if (
+      despesa.situacao === "PAGO" ||
+      despesa.situacao === "PARCIALMENTE_PAGO"
+    ) {
+      return "pago";
+    }
+    if (
+      dayjs(despesa.dataVencimento, "DD/MM/YYYY").format("DD/MM/YYYY") ===
+      dayjs(dayjs(), "DD/MM/YYYY").format("DD/MM/YYYY")
+    ) {
+      return "vence-hoje";
+    }
+    return "";
   };
 
   const columns = [
@@ -82,6 +228,7 @@ export const TableDespesa = ({
     {
       title: "Situação",
       key: "situacao",
+      className: "ocultar-para-sm",
       dataIndex: "situacao",
       render: (situacao) => (
         <span>
@@ -95,82 +242,39 @@ export const TableDespesa = ({
       title: "",
       key: "action",
       render: (text, despesa) => (
-        <span>
-          <Button
-            shape="circle"
-            type="primary"
-            title="Editar"
-            size="small"
-            onClick={() => {onEditar(despesa.id)}}
-            icon={<EditOutlined />}
-          />
-          <Divider type="vertical" />
-          <Popconfirm
-            placement="bottom"
-            title="Tem certeza que deseja marcar como pago essa despesa?"
-            okText="Sim"
-            cancelText="Não"
-            onConfirm={(event) => {
-              event.stopPropagation();
-              onPagar(despesa.id);
-            }}
-            onCancel={(event) => {
-              event.stopPropagation();
-            }}
-          >
-            <Button
-              shape="circle"
-              title="Pagar"
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              icon={<UploadOutlined />}
-            />
-          </Popconfirm>
-          <Divider type="vertical" />
-          <Popconfirm
-            placement="bottom"
-            title={
-              despesa.qtdeParcela > 0 ? (
-                <span>
-                  <strong>DESPESA PARCELADA:</strong>
-                  <br />
-                  <br />
-                  Será removido todas parcelas, inclusive já PAGAS e
-                  competências anteriores.
-                  <br /> Sendo assim poderá influenciar em competências
-                  anteriores.
-                  <br />
-                  <br /> Deseja continuar?
-                </span>
-              ) : (
-                "Tem certeza que deseja excluir essa despesa?"
-              )
-            }
-            okText="Sim"
-            cancelText="Não"
-            onConfirm={(event) => {
-              event.stopPropagation();
-              onExcluir(despesa.id);
-            }}
-            onCancel={(event) => {
-              event.stopPropagation();
-            }}
-          >
+        <div>
+          <span className="ocultar-para-sm">
             <Button
               shape="circle"
               type="primary"
-              danger
-              title="Excluir"
+              title="Editar"
               size="small"
-              onClick={(event) => {
-                event.stopPropagation();
+              onClick={() => {
+                onEditar(despesa.id);
               }}
-              icon={<DeleteOutlined />}
+              icon={<EditOutlined />}
             />
-          </Popconfirm>
-        </span>
+            <Divider type="vertical" />
+            <MarcarComoPagoButton despesaId={despesa.id} shape="circle"/>
+            <Divider type="vertical" />
+            <DeletarRegistro despesa={despesa} shape="circle"/>
+          </span>
+          <span>
+            <Dropdown
+              placement="bottomRight"
+              menu={{ items }}
+              trigger={["click"]}
+            >
+              <Button
+                shape="circle"
+                icon={<MoreOutlined />}
+                onClick={() => {
+                  setDespesaSelecionada(despesa);
+                }}
+              />
+            </Dropdown>
+          </span>
+        </div>
       ),
     },
   ];
@@ -183,6 +287,7 @@ export const TableDespesa = ({
     <Table
       rowSelection={rowSelectionConfig}
       columns={columns}
+      rowClassName={(despesa, index) => rowsClassName(despesa, index)}
       dataSource={despesas}
       rowKey={(despesa) => despesa.id}
       size="small"
@@ -201,7 +306,9 @@ export const TableDespesa = ({
           </div>
         ),
         rowExpandable: (despesa) =>
-          despesa.categorias && despesa.categorias.length > 0,
+          window.screen.width > 576 &&
+          despesa.categorias &&
+          despesa.categorias.length > 0,
       }}
       pagination={{
         onChange: onChange,

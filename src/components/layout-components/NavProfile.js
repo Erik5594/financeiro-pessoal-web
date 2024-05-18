@@ -76,7 +76,7 @@ const MenuItemMetodosPagamento = (props) => {
       <Drawer
         title="Métodos de pagamento"
         placement={"right"}
-        width={500}
+        width={window.screen.width < 1100 ? 380 : 500}
         onClose={onCloseDrawer}
         open={open}
         extra={

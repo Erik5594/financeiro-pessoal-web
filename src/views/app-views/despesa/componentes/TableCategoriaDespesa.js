@@ -1,5 +1,6 @@
 import { Button, Col, Divider, Input, Row, Table, Tooltip } from "antd";
 import { MinusOutlined, EditOutlined } from "@ant-design/icons";
+import '../despesa.css'
 import React from "react";
 
 export const TableCategoriaDespesa = ({
@@ -15,6 +16,10 @@ export const TableCategoriaDespesa = ({
     }
     return descricao;
   };
+
+  const getWidth = () => {
+    return window.screen.width < 576 ? 20:135;
+  }
 
   const getValorFormatado = (valor) => {
     return valor.toLocaleString("pt-BR", {
@@ -43,20 +48,21 @@ export const TableCategoriaDespesa = ({
           />
         </Tooltip>
       ),
-      width: 180,
+      width: window.screen.width < 576 ? 140 : 180,
       ellipsis: true,
     },
     {
       title: "Descrição",
       dataIndex: "descricao",
       key: "descricao",
+      className: "ocultar-para-sm",
       render: (descricao) => (
         <Tooltip title={descricao} placement="topLeft">
           {" "}
           <Input value={getDescReduzida(descricao, 25, 27)} disabled ellipsis />
         </Tooltip>
       ),
-      width: 240,
+      width: window.screen.width < 576 ? 120 : 240,
       ellipsis: true,
     },
     {
@@ -64,7 +70,7 @@ export const TableCategoriaDespesa = ({
       dataIndex: "valor",
       key: "valor",
       render: (valor) => <Input value={getValorFormatado(valor)} disabled />,
-      width: 135,
+      width: window.screen.width < 576 ? 120 : 135,
     },
     {
       title: "",
@@ -72,6 +78,7 @@ export const TableCategoriaDespesa = ({
       render: (text, despesa, index) => (
         <span style={{ display: disabledOptionRemove ? "none" : "flex" }}>
           <Button
+          className="ocultar-para-sm"
             shape="circle"
             type="dashed"
             onClick={() => onEditarDespesaCategoria(despesa, index)}
@@ -93,7 +100,7 @@ export const TableCategoriaDespesa = ({
 
   return (
     <Row gutter={16}>
-      <Col>
+      <Col xs={24} sm={24} md={24}>
         {!categoriasDespesas || categoriasDespesas.length === 0 ? null : (
           <Table
             showHeader={isEdicao}

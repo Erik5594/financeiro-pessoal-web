@@ -92,10 +92,10 @@ export const DashboardPieDespesa = (props) => {
     },
     responsive: [
       {
-        breakpoint: 480,
+        breakpoint: 576,
         options: {
           chart: {
-            width: 200,
+            width: 250,
           },
           legend: {
             position: "bottom",
