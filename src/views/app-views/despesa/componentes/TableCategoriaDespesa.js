@@ -17,10 +17,6 @@ export const TableCategoriaDespesa = ({
     return descricao;
   };
 
-  const getWidth = () => {
-    return window.screen.width < 576 ? 20:135;
-  }
-
   const getValorFormatado = (valor) => {
     return valor.toLocaleString("pt-BR", {
       style: "currency",

@@ -56,7 +56,6 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(false);
     const values = tipo === "receita" ? state.receita : state.despesa;
-    console.log("Values Cadastro", values);
     setFields([
       { name: ["nome"], value: "" },
       { name: ["descricao"], value: "" },
@@ -69,7 +68,6 @@ export const Categoria = (props) => {
     setTipo(tipo);
     setIsEdicao(true);
     const values = tipo === "receita" ? state.receita : state.despesa;
-    console.log("Values Edição", values);
     buscarById({ id: values.idCategoriaPai })
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
@@ -190,7 +188,6 @@ export const Categoria = (props) => {
   };
 
   const onSelect = (tipo, categoriaSelecionada) => {
-    console.log("Selecionado", categoriaSelecionada);
     let nomeCaminho = "";
     let nomeCaminhoParent = "";
     let idCategoriaSelecionada = "";

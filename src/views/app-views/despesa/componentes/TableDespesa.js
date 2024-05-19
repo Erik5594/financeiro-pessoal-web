@@ -1,8 +1,9 @@
-import { Button, Divider, Dropdown, Popconfirm, Table, Tag } from "antd";
+import { Button, Divider, Dropdown, Modal, Popconfirm, Table, Tag } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   UploadOutlined,
+  ExclamationCircleOutlined,
   MoreOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -27,6 +28,7 @@ export const TableDespesa = ({
   onChangeDespesasSelecionadas,
 }) => {
   const [despesaSelecionada, setDespesaSelecionada] = useState({});
+  const [modalMarcarPago, setModalMarcarPago] = useState(false);
 
   const rowSelectionConfig = {
     onChange: (idsDespesas, despesas) => {
@@ -50,10 +52,26 @@ export const TableDespesa = ({
   };
 
   const DeletarRegistro = (props) => (
-    <Popconfirm
-      placement="bottom"
-      title={
-        props.despesa.qtdeParcela > 0 ? (
+    <Button
+      shape={props.shape}
+      type="primary"
+      style={props.style}
+      danger
+      title="Excluir"
+      size="small"
+      onClick={() => confirmExclusao(props.despesa)}
+      icon={<DeleteOutlined />}
+    >
+      {props.label}
+    </Button>
+  );
+
+  const confirmExclusao = (despesa) => {
+    Modal.confirm({
+      title: "Atenção",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        despesa.qtdeParcela > 0 ? (
           <span>
             <strong>DESPESA PARCELADA:</strong>
             <br />
@@ -66,69 +84,39 @@ export const TableDespesa = ({
           </span>
         ) : (
           "Tem certeza que deseja excluir essa despesa?"
-        )
-      }
-      okText="Sim"
-      cancelText="Não"
-      onConfirm={(event) => {
-        event.stopPropagation();
-        onExcluir(props.despesa.id);
-      }}
-      onCancel={(event) => {
-        event.stopPropagation();
-      }}
-    >
-      <Button
-        shape={props.shape}
-        type="primary"
-        style={props.style}
-        danger
-        title="Excluir"
-        size="small"
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-        icon={<DeleteOutlined />}
-      >
-        {props.label}
-      </Button>
-    </Popconfirm>
-  );
+        ),
+      okText: "Sim",
+      cancelText: "Não",
+      onOk: () => {
+        onExcluir(despesa.id);
+      },
+    });
+  };
 
   const MarcarComoPagoButton = (props) => (
-    <Popconfirm
-      placement="bottom"
-      title="Tem certeza que deseja marcar como pago essa despesa?"
-      okText="Sim"
-      cancelText="Não"
-      onConfirm={(event) => {
-        event.stopPropagation();
-        onPagar(props.despesaId);
-      }}
-      onCancel={(event) => {
-        event.stopPropagation();
-      }}
+    <Button
+      onClick={() => confirmMarcarComoPago(props.despesaId)}
+      title="Marcar como pago"
+      size="small"
+      shape={props.shape}
+      icon={<UploadOutlined />}
     >
-      <Button
-        shape={props.shape}
-        title="Marcar como pago"
-        size="small"
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-        icon={<UploadOutlined />}
-      >
-        {props.label}
-      </Button>
-    </Popconfirm>
+      {props.label}
+    </Button>
   );
 
-  const MenuItem = (props) => (
-    <Flex alignItems="center" gap={SPACER[2]} onClick={props.action}>
-      <Icon>{props.icon}</Icon>
-      <span>{props.label}</span>
-    </Flex>
-  );
+  const confirmMarcarComoPago = (despesaId) => {
+    Modal.confirm({
+      title: "Atenção",
+      icon: <ExclamationCircleOutlined />,
+      content: "Tem certeza que deseja marcar como pago essa despesa?",
+      okText: "Sim",
+      cancelText: "Não",
+      onOk: () => {
+        onPagar(despesaId);
+      },
+    });
+  };
 
   const editando = () => {
     onEditar(despesaSelecionada.id);
@@ -143,7 +131,7 @@ export const TableDespesa = ({
           size="small"
           onClick={editando}
           icon={<EditOutlined />}
-          style={{width: '100%'}} 
+          style={{ width: "100%" }}
         >
           Editar
         </Button>
@@ -155,13 +143,19 @@ export const TableDespesa = ({
         <MarcarComoPagoButton
           despesaId={despesaSelecionada.id}
           label="Marcar como pago"
-          style={{width: '100%'}} 
+          style={{ width: "100%" }}
         />
       ),
     },
     {
       key: "excluir",
-      label: <DeletarRegistro label="Excluir" despesa={despesaSelecionada} style={{width: '100%'}} />,
+      label: (
+        <DeletarRegistro
+          label="Excluir"
+          despesa={despesaSelecionada}
+          style={{ width: "100%" }}
+        />
+      ),
     },
   ];
 
@@ -255,11 +249,11 @@ export const TableDespesa = ({
               icon={<EditOutlined />}
             />
             <Divider type="vertical" />
-            <MarcarComoPagoButton despesaId={despesa.id} shape="circle"/>
+            <MarcarComoPagoButton despesaId={despesa.id} shape="circle" />
             <Divider type="vertical" />
-            <DeletarRegistro despesa={despesa} shape="circle"/>
+            <DeletarRegistro despesa={despesa} shape="circle" />
           </span>
-          <span>
+          <span className="ocultar-para-maior-sm">
             <Dropdown
               placement="bottomRight"
               menu={{ items }}

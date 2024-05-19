@@ -99,9 +99,15 @@ export const AlterarSenha = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          <div style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                }}>
           <Button type="primary" htmlType="submit">
             Salvar alterações
           </Button>
+          </div>
         </Col>
       </Row>
     </Form>

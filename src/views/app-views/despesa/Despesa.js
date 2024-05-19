@@ -23,11 +23,6 @@ import DespesaCadastroModal from "./DespesaCadastroModal";
 import ModalFiltroDespesa from "./componentes/ModalFiltroDespesa";
 import dayjs from "dayjs";
 
-const titulo = {
-  marginBottom: "20px",
-  fontSize: "x-large",
-};
-
 export const Despesa = (props) => {
   const {
     listar,
@@ -203,7 +198,6 @@ export const Despesa = (props) => {
           const despesasSelecionadasAux = despesas.filter((despesa) =>
             despesasSelecionadas.anyMatch((id) => id === despesa.id)
           );
-          console.log("Teste...", despesasSelecionadasAux);
         }
       })
       .catch((rejectedValueOrSerializedError) =>
@@ -244,10 +238,6 @@ export const Despesa = (props) => {
           message: "Ocorreu um erro ao tentar excluir as despesas!",
         })
       );
-  };
-
-  const AcoesSelecionadas = () => {
-    return <div></div>;
   };
 
   const TituloFiltro = () => {

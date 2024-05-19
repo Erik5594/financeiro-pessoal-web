@@ -62,6 +62,7 @@ export const DespesaCadastroModal = (props) => {
   const [form] = Form.useForm();
   const [listaMetodoPagamento, setListaMetodoPagamento] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [todasCategorias, setTodasCategorias] = useState([]);
   const [tableCategoriaDespesa, setTableCategoriaDespesa] = useState([]);
   const filtroMetodoPagamento = { page: 0, size: 500, nome: "" };
   const [cadastrarAndContinuar, setCadastrarAndContinuar] = useState(false);
@@ -205,7 +206,7 @@ export const DespesaCadastroModal = (props) => {
 
   const fetchCategorias = (filtro = filtroCategoria) => {
     categoriaService
-      .buscarTodas({ ...filtroCategoria, nome: filtro.nome })
+      .buscarTodas({ ...filtroCategoria, nome: filtro.nome, ultimaFilha: true })
       .then((originalPromiseResult) => {
         if (originalPromiseResult.payload !== "Error") {
           setCategorias(originalPromiseResult);
@@ -213,7 +214,20 @@ export const DespesaCadastroModal = (props) => {
       })
       .catch((rejectedValueOrSerializedError) =>
         console.log(
-          "Erro carregar formas pagamentos...",
+          "Erro carregar categorias...",
+          rejectedValueOrSerializedError
+        )
+      );
+      categoriaService
+      .buscarTodas({ ...filtroCategoria, nome: filtro.nome, ultimaFilha: false })
+      .then((originalPromiseResult) => {
+        if (originalPromiseResult.payload !== "Error") {
+          setTodasCategorias(originalPromiseResult);
+        }
+      })
+      .catch((rejectedValueOrSerializedError) =>
+        console.log(
+          "Erro carregar todas categorias...",
           rejectedValueOrSerializedError
         )
       );
@@ -305,7 +319,7 @@ export const DespesaCadastroModal = (props) => {
       const categoriasAux = despesa.categorias.map((categoria) => {
         return {
           ...categoria,
-          categoria: categorias.find(
+          categoria: todasCategorias.find(
             (categoriaAux) => categoriaAux.id === categoria.idCategoria
           ),
         };

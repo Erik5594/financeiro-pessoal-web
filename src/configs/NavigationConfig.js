@@ -1,29 +1,19 @@
-import { DashboardOutlined, DollarOutlined } from '@ant-design/icons';
+import { BarChartOutlined, ExceptionOutlined, DollarOutlined, UserOutlined, LockOutlined, GoldOutlined } from '@ant-design/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
 
 const dashBoardNavTree = [{
   key: 'dashboards',
-  path: `${APP_PREFIX_PATH}/dashboards`,
-  title: 'sidenav.dashboard',
-  icon: DashboardOutlined,
+  title: 'home',
+  path: `${APP_PREFIX_PATH}/dashboards/default`,
+  icon: BarChartOutlined,
   breadcrumb: false,
-  isGroupTitle: true,
-  submenu: [
-    {
-      key: 'dashboards-default',
-      path: `${APP_PREFIX_PATH}/dashboards/default`,
-      title: 'sidenav.dashboard.default',
-      icon: DashboardOutlined,
-      breadcrumb: false,
-      submenu: []
-    }
-  ]
+  isGroupTitle: false,
+  submenu: []
 },
 {
-  key: 'despesas',
-  path: `${APP_PREFIX_PATH}/despesa`,
-  title: 'sidenav.despesa',
+  key: 'cadastros',
+  title: 'sidenav.cadastro',
   icon: DollarOutlined,
   breadcrumb: false,
   isGroupTitle: true,
@@ -32,7 +22,48 @@ const dashBoardNavTree = [{
       key: 'listaDespesas',
       path: `${APP_PREFIX_PATH}/despesa`,
       title: 'sidenav.despesa.lista',
+      icon: ExceptionOutlined,
+      breadcrumb: false,
+      submenu: []
+    },
+    {
+      key: 'listaCatgoria',
+      path: `${APP_PREFIX_PATH}/categoria`,
+      title: 'sidenav.categoria.lista',
+      icon: GoldOutlined,
+      breadcrumb: false,
+      submenu: []
+    },
+    {
+      key: 'metodosPagamento',
+      title: 'sidenav.config.metodos-pagamento',
+      path: `${APP_PREFIX_PATH}/metodos-pagamento`,
       icon: DollarOutlined,
+      breadcrumb: false,
+      submenu: []
+    }
+  ]
+},
+{
+  key: 'configuracao',
+  title: 'sidenav.config',
+  icon: DollarOutlined,
+  breadcrumb: true,
+  isGroupTitle: true,
+  submenu: [
+    {
+      key: 'perfil',
+      path: `${APP_PREFIX_PATH}/config/editar-perfil`,
+      title: 'sidenav.config.perfil',
+      icon: UserOutlined,
+      breadcrumb: false,
+      submenu: []
+    },
+    {
+      key: 'alterar-senha',
+      path: `${APP_PREFIX_PATH}/config/alterar-senha`,
+      title: 'sidenav.config.alterar-senha',
+      icon: LockOutlined,
       breadcrumb: false,
       submenu: []
     }

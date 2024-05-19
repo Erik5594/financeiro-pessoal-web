@@ -62,7 +62,6 @@ export class Configuracao extends Component {
 	render() {
 		return (
 			<InnerAppLayout 
-				sideContentWidth={320}
 				sideContent={<OpcaoConfiguracao />}
 				mainContent={<ConfiguracaoConteudo />}
 			/>

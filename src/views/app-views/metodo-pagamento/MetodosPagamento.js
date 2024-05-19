@@ -1,28 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { cadastrar, listar, excluir } from "store/slices/metodoPagamentoSlice";
-import { notification } from "antd";
+import { Button, Tooltip, notification } from "antd";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import MetodoPagamentoModal from "./modal/MetodoPagamentoModal";
 import MetodoPagamentoList from "./component/MetodoPagamentoList";
+import PageHeaderAlt from "components/layout-components/PageHeaderAlt";
+import Flex from "components/shared-components/Flex";
+import IntlMessage from "components/util-components/IntlMessage";
+import { Grid } from "antd";
+import Utils from "utils";
+
+const { useBreakpoint } = Grid;
 
 export const MetodosPagamento = (props) => {
-  const {
-    cadastrar,
-    listar,
-    excluir,
-    loading,
-    metodosPagamentos,
-    hasMore,
-    openModalCadastro,
-    showModalCadastro,
-    onCloseModal,
-  } = props;
+  const { cadastrar, listar, excluir, loading, metodosPagamentos, hasMore } =
+    props;
 
   const [paginacao, setPaginacao] = useState({ pageSize: 10, current: 0 });
   const [isEdicao, setIsEdicao] = useState(false);
   const [metodoPagamento, setMetodoPagamento] = useState({});
+  const [openModalCadastro, setOpenModalCadastro] = useState(false);
 
   const inclemento = 5;
+
+  const isMobile = !Utils.getBreakPoint(useBreakpoint()).includes("lg");
 
   const fetchMetodosPagamentos = () => {
     listar({ size: paginacao.pageSize, page: paginacao.current });
@@ -53,11 +60,61 @@ export const MetodosPagamento = (props) => {
   const onEditar = (metodoPagamento) => {
     setMetodoPagamento(metodoPagamento);
     setIsEdicao(true);
-    showModalCadastro();
+    showModal();
+  };
+
+  const onNovoCadastro = () => {
+    setMetodoPagamento({});
+    setIsEdicao(false);
+    showModal();
+  };
+
+  const showModal = () => {
+    setOpenModalCadastro(true);
+  };
+
+  const onCloseModal = () => {
+    setOpenModalCadastro(false);
   };
 
   return (
     <div>
+      <PageHeaderAlt className="border-bottom">
+        <div className="container-fluid">
+          <Flex
+            justifyContent="space-between"
+            alignItems="center"
+            className="py-4"
+          >
+            <div style={{ display: "block", width: "100%" }}>
+              <div style={{ display: "flex" }}>
+                <h2>
+                  <IntlMessage id="sidenav.config.metodos-pagamento" />
+                </h2>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "end",
+                  marginTop: "10px",
+                }}
+              >
+                <Tooltip title={<IntlMessage id="new-register" />}>
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    className="ml-2"
+                    size="small"
+                    onClick={onNovoCadastro}
+                    icon={<PlusOutlined />}
+                  />
+                </Tooltip>
+              </div>
+            </div>
+          </Flex>
+        </div>
+      </PageHeaderAlt>
       <div>
         <MetodoPagamentoList
           metodosPagamentos={metodosPagamentos}

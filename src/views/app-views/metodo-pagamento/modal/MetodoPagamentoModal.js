@@ -194,7 +194,7 @@ export const MetodosPagamentoModal = (props) => {
         onFinish={(values) => onCadastrarAction(values)}
       >
         <Row gutter={16}>
-          <Col xs={18} sm={18} md={18}>
+          <Col xs={24} sm={24} md={24}>
             <Form.Item
               name="nome"
               label="Nome:"

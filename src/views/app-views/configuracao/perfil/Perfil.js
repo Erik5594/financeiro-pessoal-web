@@ -27,14 +27,9 @@ const formInicial = {
 };
 
 export const Perfil = (props) => {
+  const { buscar, atualizar, perfil } = props;
 
-    const {
-        buscar,
-        atualizar,
-        perfil
-      } = props;
-
-      let urlImagemPerfil = '';
+  let urlImagemPerfil = "";
 
   const [form] = Form.useForm();
 
@@ -51,7 +46,7 @@ export const Perfil = (props) => {
     message.loading({ content: "Removendo...", key, duration: 1000 });
     PerfilService.excluirImagem()
       .then((_) => {
-        urlImagemPerfil = '';
+        urlImagemPerfil = "";
         message.success({ content: "Removida...", key, duration: 1.5 });
         buscar();
       })
@@ -156,7 +151,7 @@ export const Perfil = (props) => {
       </Flex>
       <div className="mt-4">
         <Form
-        form={form}
+          form={form}
           name="informacaoBasica"
           layout="vertical"
           initialValues={formInicial}
@@ -220,9 +215,17 @@ export const Perfil = (props) => {
                   </Form.Item>
                 </Col>
               </Row>
-              <Button type="primary" htmlType="submit">
-                Salvar alterações
-              </Button>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                }}
+              >
+                <Button type="primary" htmlType="submit">
+                  Salvar alterações
+                </Button>
+              </div>
             </Col>
           </Row>
         </Form>
@@ -232,23 +235,18 @@ export const Perfil = (props) => {
 };
 
 const mapStateToProps = ({ perfilReducer }) => {
-    const {
-      loading,
-      message,
-      showMessage,
-      perfil,
-    } = perfilReducer;
-    return {
-      loading,
-      message,
-      showMessage,
-      perfil,
-    };
+  const { loading, message, showMessage, perfil } = perfilReducer;
+  return {
+    loading,
+    message,
+    showMessage,
+    perfil,
   };
+};
 
 const mapDispatchToProps = {
-    buscar,
-    atualizar,
-  };
+  buscar,
+  atualizar,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Perfil);
