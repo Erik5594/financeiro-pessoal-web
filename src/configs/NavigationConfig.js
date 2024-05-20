@@ -2,6 +2,7 @@ import {
   BarChartOutlined,
   ExceptionOutlined,
   DollarOutlined,
+  DeliveredProcedureOutlined,
   UserOutlined,
   LockOutlined,
   GoldOutlined,
@@ -24,8 +25,8 @@ const dashBoardNavTree = [
   {
     key: "cadastros",
     title: "sidenav.cadastro",
-    icon: DollarOutlined,
-    breadcrumb: false,
+    icon: DeliveredProcedureOutlined,
+    breadcrumb: true,
     isGroupTitle: true,
     submenu: [
       {
@@ -57,8 +58,8 @@ const dashBoardNavTree = [
   {
     key: "configuracao",
     title: "sidenav.config",
-    icon: DollarOutlined,
-    breadcrumb: true,
+    icon: SettingOutlined,
+    breadcrumb: false,
     isGroupTitle: true,
     submenu: [
       {
