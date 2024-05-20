@@ -15,6 +15,10 @@
 	"sidenav.categoria.lista": "Categorias",
 	"sidenav.config": "Configurações",
 	"sidenav.config.perfil": "Perfil",
+	"sidenav.config.perfil.edit": "Editar perfil",
+	"sidenav.config.settings": "Configurações",
+	"sidenav.config.mensalidade": "Mensalidades",
+	"sidenav.config.plano": "Assinaturas",
 	"sidenav.config.alterar-senha": "Alterar Senha",
 	"sidenav.config.metodos-pagamento":"Métodos de pagamentos",
 
