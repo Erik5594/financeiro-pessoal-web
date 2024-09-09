@@ -57,7 +57,7 @@ export const Perfil = (props) => {
   }
 
   const salvarImagemEndpoint =
-    "http://192.168.100.20:8100/api/v1/perfil/imagem";
+    "http://192.168.1.7:8100/api/v1/perfil/imagem";
 
   const getHeaders = () => {
     const jwtToken = localStorage.getItem(AUTH_TOKEN) || null;

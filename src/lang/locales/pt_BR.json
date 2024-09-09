@@ -3,6 +3,16 @@
 	"new": "Novo",
 	"register": "Cadastrar",
 	"new-register": "Novo cadastro",
+
+	"plan.select.please": "Escolha um plano",
+	"plan.select.obs": "Você tem 14 dias de trial, ou seja o vencimento da 1° mensalidade é para daqui 14 dias, contando a partir do momento da escolha do plano.",
+	"simbolo.moeda": "R$",
+
+	"perguntas.frequentes": "Perguntas frequentes",
+
+	"escolher": "Escolher",
+	"plano.atual": "Plano atual",
+	"caracteristicas": "Características",
 	
 	"sidenav.dashboard": "Dashboards",
 	"sidenav.dashboard.default": "Inicio",

@@ -91,9 +91,9 @@ export const DespesaCadastroModal = (props) => {
       dataLimite: dayjs(form.getFieldValue("dataLimiteFrequencia")).format(
         "DD/MM/YYYY"
       ),
-      primeiroLancamento: dayjs()
-        .set("date", diaLancamento)
-        .format("DD/MM/YYYY"),
+      primeiroLancamento: dayjs(form.getFieldValue("dataLancamento")).format(
+        "DD/MM/YYYY"
+      ),
       primeiroVencimento: dayjs(form.getFieldValue("dataVencimento")).format(
         "DD/MM/YYYY"
       ),
