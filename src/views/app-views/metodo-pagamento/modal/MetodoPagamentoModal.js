@@ -7,6 +7,7 @@ import {
   Input,
   InputNumber,
   Modal,
+  Popconfirm,
   Radio,
   Row,
   Tooltip,
@@ -27,21 +28,33 @@ const formDefault = {
   tipoLancamentoCompetencia: "DENTRO_MES",
 };
 
+const spanNomeCampos = {
+  fontStyle: "italic",
+  fontWeight: "bold",
+};
+
 export const MetodosPagamentoModal = (props) => {
   const { open, handleCancel, isEdicao, cadastrar, fetch, metodoPagamento } =
     props;
 
   const [form] = Form.useForm();
   const [isCartaoCredito, setIsCartaoCredito] = useState(false);
-  const [{ dataVencimento, dataCompetencia, lancamentoAte }, setDatas] = useState({
-    dataVencimento: dayjs().format("DD/MM/YYYY"),
-    dataCompetencia: dayjs().format("MM/YYYY"),
-    lancamentoAte: dayjs().format("DD/MM/YYYY"),
-  });
+  const [{ dataVencimento, dataCompetencia, lancamentoAte }, setDatas] =
+    useState({
+      dataVencimento: dayjs().format("DD/MM/YYYY"),
+      dataCompetencia: dayjs().format("MM/YYYY"),
+      lancamentoAte: dayjs().format("DD/MM/YYYY"),
+    });
 
   function atualizarDatas() {
     if (isCartaoCredito) {
       buscarDataVencimento();
+      console.log("Metodo pagamento...", metodoPagamento);
+      const diaVencimentoFieldAux = form.getFieldValue("diaVencimento");
+      const diasFechamentoFieldAux = form.getFieldValue("diasParaFechamento");
+      metodoPagamento.alteracaoDias =
+        metodoPagamento.diaVencimento !== diaVencimentoFieldAux ||
+        metodoPagamento.diasParaFechamento !== diasFechamentoFieldAux;
     }
   }
 
@@ -82,7 +95,7 @@ export const MetodosPagamentoModal = (props) => {
   useEffect(() => {
     if (metodoPagamento?.id) {
       arrumarFieldsEdicao();
-      if(metodoPagamento.tipoMetodoPagamento === 'CARTAO_CREDITO'){
+      if (metodoPagamento.tipoMetodoPagamento === "CARTAO_CREDITO") {
         buscarDataVencimento();
       }
     }
@@ -91,7 +104,7 @@ export const MetodosPagamentoModal = (props) => {
   useEffect(() => {
     if (metodoPagamento?.id) {
       arrumarFieldsEdicao();
-      if(metodoPagamento.tipoMetodoPagamento === 'CARTAO_CREDITO'){
+      if (metodoPagamento.tipoMetodoPagamento === "CARTAO_CREDITO") {
         buscarDataVencimento();
       }
     }
@@ -107,11 +120,15 @@ export const MetodosPagamentoModal = (props) => {
       });
       fieldsEdicao.push({
         name: ["diaVencimento"],
-        value: metodoPagamento.diaVencimento ? metodoPagamento.diaVencimento : formDefault.diaVencimento,
+        value: metodoPagamento.diaVencimento
+          ? metodoPagamento.diaVencimento
+          : formDefault.diaVencimento,
       });
       fieldsEdicao.push({
         name: ["diasParaFechamento"],
-        value: metodoPagamento.diasParaFechamento ? metodoPagamento.diasParaFechamento : formDefault.diasParaFechamento,
+        value: metodoPagamento.diasParaFechamento
+          ? metodoPagamento.diasParaFechamento
+          : formDefault.diasParaFechamento,
       });
       fieldsEdicao.push({
         name: ["isCartaoCredito"],
@@ -162,13 +179,80 @@ export const MetodosPagamentoModal = (props) => {
     return (
       <div style={{ display: "flex", justifyContent: "start", width: "100%" }}>
         <span style={{ color: "#939393", fontStyle: "italic" }}>
-          Cadastrando um despesa hoje({dayjs().format("DD/MM/YYYY")}) com essa forma de pagamento, ficaria assim:<br/>
-          <strong>Data de lançamento até: {lancamentoAte}</strong><br/>
-          <strong>Competência {dataCompetencia}</strong><br/>
-          <strong>Vencimento: {dataVencimento}</strong><br/>
-          <strong>Melhor dia: {dayjs(lancamentoAte, "DD/MM/YYYY").add(1, "day").format("DD/MM/YYYY")}</strong><br/>
+          Cadastrando um despesa hoje({dayjs().format("DD/MM/YYYY")}) com essa
+          forma de pagamento, ficaria assim:
+          <br />
+          <strong>Data de lançamento até: {lancamentoAte}</strong>
+          <br />
+          <strong>Competência {dataCompetencia}</strong>
+          <br />
+          <strong>Vencimento: {dataVencimento}</strong>
+          <br />
+          <strong>
+            Melhor dia:{" "}
+            {dayjs(lancamentoAte, "DD/MM/YYYY")
+              .add(1, "day")
+              .format("DD/MM/YYYY")}
+          </strong>
+          <br />
         </span>
       </div>
+    );
+  };
+
+  function confirmarAlteracaoDias() {
+    form.submit();
+  }
+
+  const ConfirmeDialogAlteracaoDias = () => {
+    return (
+      <div style={{ marginRight: "5px" }}>
+        <Popconfirm
+          placement="bottom"
+          title="Atenção!!!"
+          description={
+            <Fragment>
+              As alterações dos campos{" "}
+              <span style={spanNomeCampos}>Dia do vencimento</span> e/ou{" "}
+              <span style={spanNomeCampos}>Dias para fechamento</span>
+              <br />
+              só refletiram nas despesas{" "}
+              <span style={spanNomeCampos}>Em aberto</span> e nos proxímos
+              lançamentos.
+              <br />
+              <br />
+              <strong>Deseja continuar?</strong>
+            </Fragment>
+          }
+          okText="Sim"
+          cancelText="Não"
+          onConfirm={(event) => {
+            event.stopPropagation();
+            confirmarAlteracaoDias();
+          }}
+          onCancel={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          <Button
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            disabled={false}
+            type="primary"
+          >
+            Salvar
+          </Button>
+        </Popconfirm>
+      </div>
+    );
+  };
+
+  const ButtonSalvar = () => {
+    return (
+      <Button className="mr-2" type="primary" htmlType="submit">
+        {isEdicao ? "Salvar" : "Cadastrar"}
+      </Button>
     );
   };
 
@@ -261,12 +345,14 @@ export const MetodosPagamentoModal = (props) => {
               <Checkbox
                 onChange={(event) => {
                   setIsCartaoCredito(event.target.checked);
-                  if(event.target.checked){
+                  if (event.target.checked) {
                     buscarDataVencimento();
                   }
                 }}
                 value={isCartaoCredito}
-              >Cartão de crédito</Checkbox>
+              >
+                Cartão de crédito
+              </Checkbox>
             </Form.Item>
           </Col>
           <Col xs={12} sm={12} md={12}>
@@ -278,8 +364,13 @@ export const MetodosPagamentoModal = (props) => {
               <Checkbox>Padrão</Checkbox>
             </Form.Item>
           </Col>
-          <div style={{ display: isCartaoCredito ? "flex" : "none", width: '100%' }}>
-            <Col  xs={12} sm={12} md={12}>
+          <div
+            style={{
+              display: isCartaoCredito ? "flex" : "none",
+              width: "100%",
+            }}
+          >
+            <Col xs={12} sm={12} md={12}>
               <Form.Item
                 layout="vertical"
                 name="diaVencimento"
@@ -315,9 +406,11 @@ export const MetodosPagamentoModal = (props) => {
           <Col xs={24} sm={24} md={24}>
             <div style={{ display: "flex", justifyContent: "end" }}>
               <Form.Item>
-                <Button className="mr-2" type="primary" htmlType="submit">
-                  {isEdicao ? "Salvar" : "Cadastrar"}
-                </Button>
+                {metodoPagamento.alteracaoDias ? (
+                  <ConfirmeDialogAlteracaoDias />
+                ) : (
+                  <ButtonSalvar />
+                )}
               </Form.Item>
             </div>
           </Col>

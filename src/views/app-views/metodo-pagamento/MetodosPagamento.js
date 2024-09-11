@@ -24,7 +24,7 @@ export const MetodosPagamento = (props) => {
 
   const [paginacao, setPaginacao] = useState({ pageSize: 10, current: 0 });
   const [isEdicao, setIsEdicao] = useState(false);
-  const [metodoPagamento, setMetodoPagamento] = useState({});
+  const [metodoPagamento, setMetodoPagamento] = useState({alteracaoDias: false});
   const [openModalCadastro, setOpenModalCadastro] = useState(false);
 
   const inclemento = 5;
@@ -57,8 +57,9 @@ export const MetodosPagamento = (props) => {
     fetchMetodosPagamentos();
   };
 
-  const onEditar = (metodoPagamento) => {
-    setMetodoPagamento(metodoPagamento);
+  const onEditar = (metodoPagamentoEdit) => {
+    const metodoPagamentoAux = {...metodoPagamento, ...metodoPagamentoEdit}
+    setMetodoPagamento(metodoPagamentoAux);
     setIsEdicao(true);
     showModal();
   };
